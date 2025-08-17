@@ -33,6 +33,12 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
   const [errors, setErrors] = useState<string[]>([]);
   const [lastImportErrors, setLastImportErrors] = useState<string[]>([]);
   const [errorTimestamp, setErrorTimestamp] = useState<number | null>(null);
+  const [importSummary, setImportSummary] = useState<{
+    successCount: number;
+    failCount: number;
+    failureReasons: { [key: string]: number };
+    totalProcessed: number;
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Clear last import errors after 2 minutes
@@ -185,6 +191,7 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
           
           let successCount = 0;
           let failCount = 0;
+          const failureReasons: { [key: string]: number } = {};
           
           // Process rows in batches to avoid overwhelming the database
           const batchSize = 10;
@@ -192,7 +199,7 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
             const batch = data.slice(i, i + batchSize);
             
             await Promise.all(
-              batch.map(async (row) => {
+              batch.map(async (row, batchIndex) => {
                 try {
                   const mealData: Partial<Meal> = {
                     name: row["Recipe Name"].trim(),
@@ -215,6 +222,24 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
                 } catch (error) {
                   console.error("Error importing meal:", error);
                   failCount++;
+                  
+                  // Track failure reasons
+                  let reason = "Unknown error";
+                  if (error instanceof Error) {
+                    if (error.message.includes("duplicate") || error.message.includes("unique")) {
+                      reason = "Duplicate meal name";
+                    } else if (error.message.includes("constraint") || error.message.includes("validation")) {
+                      reason = "Data validation failed";
+                    } else if (error.message.includes("network") || error.message.includes("connection")) {
+                      reason = "Network/connection error";
+                    } else if (error.message.includes("permission") || error.message.includes("authorization")) {
+                      reason = "Permission denied";
+                    } else {
+                      reason = "Database error";
+                    }
+                  }
+                  
+                  failureReasons[reason] = (failureReasons[reason] || 0) + 1;
                 }
               })
             );
@@ -224,13 +249,18 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
           
           setIsProcessing(false);
           
+          // Set import summary
+          setImportSummary({
+            successCount,
+            failCount,
+            failureReasons,
+            totalProcessed: data.length
+          });
+          
           if (successCount > 0) {
             // Refresh the meals list to show imported meals
             await fetchMeals();
             toast.success(`Successfully imported ${successCount} meals${failCount > 0 ? ` (${failCount} failed)` : ""}`);
-            if (failCount === 0) {
-              onClose();
-            }
           } else {
             toast.error("Failed to import any meals");
           }
@@ -371,6 +401,59 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
             </div>
           </CardContent>
         </Card>
+
+        {importSummary && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-foreground">Import Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-success/10 border border-success/20 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-success">{importSummary.successCount}</div>
+                  <div className="text-sm text-muted-foreground">Successfully Added</div>
+                </div>
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-destructive">{importSummary.failCount}</div>
+                  <div className="text-sm text-muted-foreground">Failed to Add</div>
+                </div>
+                <div className="bg-muted/50 border border-muted-foreground/20 rounded-lg p-4 text-center">
+                  <div className="text-2xl font-bold text-foreground">{importSummary.totalProcessed}</div>
+                  <div className="text-sm text-muted-foreground">Total Processed</div>
+                </div>
+              </div>
+              
+              {importSummary.failCount > 0 && Object.keys(importSummary.failureReasons).length > 0 && (
+                <div>
+                  <h4 className="font-medium text-foreground mb-2">Key reasons for failures:</h4>
+                  <div className="space-y-2">
+                    {Object.entries(importSummary.failureReasons).map(([reason, count]) => (
+                      <div key={reason} className="flex justify-between items-center py-2 px-3 bg-muted/30 rounded-lg">
+                        <span className="text-sm text-foreground">{reason}</span>
+                        <span className="text-sm font-medium text-destructive">{count} meals</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex gap-3 pt-4">
+                <Button 
+                  onClick={() => setImportSummary(null)} 
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Clear Summary
+                </Button>
+                {importSummary.failCount === 0 && (
+                  <Button onClick={onClose} className="flex-1">
+                    Close
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
