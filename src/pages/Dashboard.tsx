@@ -81,18 +81,6 @@ const Dashboard = () => {
     }
   }, [user, loading, navigate]);
 
-  // Convert database family members to legacy format for existing components
-  const legacyFamilyMembers: LegacyFamilyMember[] = familyMembers.map(member => ({
-    id: member.id,
-    name: member.name,
-    age: member.age || 0,
-    role: member.role || '',
-    dietaryRestrictions: [],
-    preferences: [],
-    user_id: member.user_id,
-    created_at: member.created_at,
-    updated_at: member.updated_at
-  }));
 
   if (loading) {
     return (
@@ -176,8 +164,8 @@ const Dashboard = () => {
               </Button>
             </div>
             <div className="space-y-4">
-              {legacyFamilyMembers.length > 0 ? (
-                legacyFamilyMembers.map((member) => (
+              {familyMembers.length > 0 ? (
+                familyMembers.map((member) => (
                   <FamilyMemberCard
                     key={member.id}
                     member={member}
