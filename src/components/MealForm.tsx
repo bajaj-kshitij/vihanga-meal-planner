@@ -276,6 +276,15 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
                   <div className="flex-1 text-sm border rounded-md p-2 bg-muted/30">
                     {instruction}
                   </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeInstruction(index)}
+                    className="shrink-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
                 </div>
               ))}
               <div className="flex gap-2">
