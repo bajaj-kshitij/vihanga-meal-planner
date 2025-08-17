@@ -142,7 +142,7 @@ const Dashboard = () => {
           <h2 className="text-2xl font-semibold text-foreground mb-6">Quick Actions</h2>
           <QuickActions
             onPlanMeals={() => console.log("Plan meals")}
-            onManageInventory={() => console.log("Manage inventory")}
+            onManageInventory={() => navigate('/inventory')}
             onAddFamily={() => navigate('/profiles')}
             onLogMeals={() => console.log("Log meals")}
             onViewNutrition={() => console.log("View nutrition")}

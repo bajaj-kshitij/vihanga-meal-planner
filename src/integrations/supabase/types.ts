@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      default_inventory_items: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          minimum_stock: number | null
+          name: string
+          unit: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          minimum_stock?: number | null
+          name: string
+          unit?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          minimum_stock?: number | null
+          name?: string
+          unit?: string | null
+        }
+        Relationships: []
+      }
       family_members: {
         Row: {
           age: number | null
@@ -77,6 +104,45 @@ export type Database = {
           name?: string
           nutritional_info?: Json | null
           unit?: string | null
+        }
+        Relationships: []
+      }
+      inventory_items: {
+        Row: {
+          category: string
+          created_at: string
+          current_stock: number | null
+          id: string
+          minimum_stock: number | null
+          name: string
+          notes: string | null
+          unit: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          current_stock?: number | null
+          id?: string
+          minimum_stock?: number | null
+          name: string
+          notes?: string | null
+          unit?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          current_stock?: number | null
+          id?: string
+          minimum_stock?: number | null
+          name?: string
+          notes?: string | null
+          unit?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -223,7 +289,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      initialize_user_inventory: {
+        Args: { user_id_param: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
