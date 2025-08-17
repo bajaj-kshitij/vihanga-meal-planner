@@ -25,7 +25,7 @@ interface CSVImportProps {
 }
 
 export const CSVImport = ({ onClose }: CSVImportProps) => {
-  const { createMeal } = useMeals();
+  const { createMeal, fetchMeals } = useMeals();
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -184,6 +184,8 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
           setIsProcessing(false);
           
           if (successCount > 0) {
+            // Refresh the meals list to show imported meals
+            await fetchMeals();
             toast.success(`Successfully imported ${successCount} meals${failCount > 0 ? ` (${failCount} failed)` : ""}`);
             if (failCount === 0) {
               onClose();
