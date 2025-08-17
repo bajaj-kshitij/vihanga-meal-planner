@@ -168,10 +168,10 @@ export const useMeals = () => {
       if (error) throw error;
 
       setMeals(prev => prev.map(meal => 
-        meal.id === id ? { ...meal, ...data } as Meal : meal
+        meal.id === id ? { ...meal, ...(data ?? updates) } as Meal : meal
       ));
       toast.success("Meal updated successfully");
-      return data;
+      return data ?? { id, ...updates } as Partial<Meal>;
     } catch (error) {
       console.error("Error updating meal:", error);
       toast.error("Failed to update meal");
