@@ -258,25 +258,22 @@ export const MealsList = () => {
       </div>
 
       {/* Meals Tabs */}
-      <Tabs defaultValue="my-favorites" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="my-favorites">My Meals & Liked ({userMealsAndFavorites.length})</TabsTrigger>
-          <TabsTrigger value="all">All Meals ({filteredMeals.length})</TabsTrigger>
-          <TabsTrigger value="my">My Recipes ({myMeals.length})</TabsTrigger>
-          <TabsTrigger value="public">Public ({publicMeals.length})</TabsTrigger>
+      <Tabs defaultValue="favorites" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="favorites">Favorites ({favoriteMeals.length})</TabsTrigger>
+          <TabsTrigger value="all">All Meals ({filteredMeals.length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="my-favorites" className="mt-6">
-          {userMealsAndFavorites.length === 0 ? (
+        <TabsContent value="favorites" className="mt-6">
+          {favoriteMeals.length === 0 ? (
             <div className="text-center py-12">
               <ChefHat className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">No meals found</h3>
-              <p className="text-muted-foreground">Start by adding your first meal recipe or like some public recipes!</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">No favorite meals</h3>
+              <p className="text-muted-foreground">Start by liking some meals to see them here!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userMealsAndFavorites.map((meal) => (
+              {favoriteMeals.map((meal) => (
                 <MealCard
                   key={meal.id}
                   meal={meal}
@@ -311,50 +308,6 @@ export const MealsList = () => {
               ))}
             </div>
           )}
-        </TabsContent>
-
-        <TabsContent value="my" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {myMeals.map((meal) => (
-              <MealCard
-                key={meal.id}
-                meal={meal}
-                onEdit={handleEdit}
-                onView={handleView}
-                onToggleFavorite={handleToggleFavorite}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="public" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {publicMeals.map((meal) => (
-              <MealCard
-                key={meal.id}
-                meal={meal}
-                onView={handleView}
-                onToggleFavorite={handleToggleFavorite}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="favorites" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {favoriteMeals.map((meal) => (
-              <MealCard
-                key={meal.id}
-                meal={meal}
-                onEdit={handleEdit}
-                onView={handleView}
-                onToggleFavorite={handleToggleFavorite}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
         </TabsContent>
       </Tabs>
     </div>
