@@ -9,6 +9,7 @@ import { useMeals, Meal } from "@/hooks/useMeals";
 
 interface CSVRow {
   "Recipe Name": string;
+  "Description": string;
   "Ingredients": string;
   "Prep Time": string;
   "Cook Time": string;
@@ -104,6 +105,15 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
       .filter(tag => tag.length > 0);
   };
 
+  const parseIngredients = (ingredientsText: string): string[] => {
+    if (!ingredientsText?.trim()) return [];
+    
+    return ingredientsText
+      .split(/[,;|\n]/)
+      .map(ingredient => ingredient.trim())
+      .filter(ingredient => ingredient.length > 0);
+  };
+
   const handleImport = async () => {
     if (!file) return;
     
@@ -156,7 +166,8 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
                 try {
                   const mealData: Partial<Meal> = {
                     name: row["Recipe Name"].trim(),
-                    description: row["Ingredients"].trim(),
+                    description: row["Description"]?.trim() || "",
+                    ingredients: parseIngredients(row["Ingredients"]),
                     prep_time_minutes: parseInt(row["Prep Time"]),
                     cook_time_minutes: parseInt(row["Cook Time"]),
                     cuisine_type: row["Cuisine Type"]?.trim() || "Indian",
@@ -233,15 +244,16 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
           <CardContent>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>1. Recipe Name</div>
-              <div>2. Ingredients</div>
-              <div>3. Prep Time (minutes)</div>
-              <div>4. Cook Time (minutes)</div>
-              <div>5. Cuisine Type</div>
-              <div>6. Meal Type (breakfast/lunch/dinner/snack)</div>
-              <div>7. Difficulty (easy/medium/hard)</div>
-              <div>8. Serving (number)</div>
-              <div>9. Cooking Instructions</div>
-              <div>10. Tags (comma-separated)</div>
+              <div>2. Description</div>
+              <div>3. Ingredients</div>
+              <div>4. Prep Time (minutes)</div>
+              <div>5. Cook Time (minutes)</div>
+              <div>6. Cuisine Type</div>
+              <div>7. Meal Type (breakfast/lunch/dinner/snack)</div>
+              <div>8. Difficulty (easy/medium/hard)</div>
+              <div>9. Serving (number)</div>
+              <div>10. Cooking Instructions</div>
+              <div>11. Tags (comma-separated)</div>
             </div>
           </CardContent>
         </Card>
