@@ -46,10 +46,9 @@ export type Database = {
           age: number | null
           avatar_url: string | null
           created_at: string
-          dietary_restrictions: string[] | null
           id: string
+          meal_preferences: string[] | null
           name: string
-          preferences: string[] | null
           role: string | null
           updated_at: string
           user_id: string
@@ -58,10 +57,9 @@ export type Database = {
           age?: number | null
           avatar_url?: string | null
           created_at?: string
-          dietary_restrictions?: string[] | null
           id?: string
+          meal_preferences?: string[] | null
           name: string
-          preferences?: string[] | null
           role?: string | null
           updated_at?: string
           user_id: string
@@ -70,10 +68,9 @@ export type Database = {
           age?: number | null
           avatar_url?: string | null
           created_at?: string
-          dietary_restrictions?: string[] | null
           id?: string
+          meal_preferences?: string[] | null
           name?: string
-          preferences?: string[] | null
           role?: string | null
           updated_at?: string
           user_id?: string

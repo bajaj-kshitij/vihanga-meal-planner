@@ -2,10 +2,8 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { X, Plus } from "lucide-react";
+import { MealSelector } from "./MealSelector";
 import type { FamilyMember } from '@/hooks/useFamilyMembers';
 
 interface FamilyMemberFormProps {
@@ -20,12 +18,8 @@ export const FamilyMemberForm = ({ member, onSubmit, onCancel, loading }: Family
     name: member?.name || '',
     age: member?.age || '',
     role: member?.role || '',
-    dietary_restrictions: member?.dietary_restrictions || [],
-    preferences: member?.preferences || [],
+    meal_preferences: member?.meal_preferences || [],
   });
-
-  const [newRestriction, setNewRestriction] = useState('');
-  const [newPreference, setNewPreference] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,37 +29,10 @@ export const FamilyMemberForm = ({ member, onSubmit, onCancel, loading }: Family
     });
   };
 
-  const addRestriction = () => {
-    if (newRestriction.trim() && !formData.dietary_restrictions.includes(newRestriction.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        dietary_restrictions: [...prev.dietary_restrictions, newRestriction.trim()]
-      }));
-      setNewRestriction('');
-    }
-  };
-
-  const removeRestriction = (restriction: string) => {
+  const handleMealPreferencesChange = (mealIds: string[]) => {
     setFormData(prev => ({
       ...prev,
-      dietary_restrictions: prev.dietary_restrictions.filter(r => r !== restriction)
-    }));
-  };
-
-  const addPreference = () => {
-    if (newPreference.trim() && !formData.preferences.includes(newPreference.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        preferences: [...prev.preferences, newPreference.trim()]
-      }));
-      setNewPreference('');
-    }
-  };
-
-  const removePreference = (preference: string) => {
-    setFormData(prev => ({
-      ...prev,
-      preferences: prev.preferences.filter(p => p !== preference)
+      meal_preferences: mealIds
     }));
   };
 
@@ -111,57 +78,11 @@ export const FamilyMemberForm = ({ member, onSubmit, onCancel, loading }: Family
             />
           </div>
 
-          <div className="space-y-2">
-            <Label>Dietary Restrictions</Label>
-            <div className="flex gap-2">
-              <Input
-                value={newRestriction}
-                onChange={(e) => setNewRestriction(e.target.value)}
-                placeholder="Add dietary restriction"
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addRestriction())}
-              />
-              <Button type="button" onClick={addRestriction} size="icon" variant="outline">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {formData.dietary_restrictions.map((restriction, index) => (
-                <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                  {restriction}
-                  <X 
-                    className="w-3 h-3 cursor-pointer" 
-                    onClick={() => removeRestriction(restriction)}
-                  />
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Food Preferences</Label>
-            <div className="flex gap-2">
-              <Input
-                value={newPreference}
-                onChange={(e) => setNewPreference(e.target.value)}
-                placeholder="Add food preference"
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addPreference())}
-              />
-              <Button type="button" onClick={addPreference} size="icon" variant="outline">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {formData.preferences.map((preference, index) => (
-                <Badge key={index} variant="outline" className="flex items-center gap-1">
-                  {preference}
-                  <X 
-                    className="w-3 h-3 cursor-pointer" 
-                    onClick={() => removePreference(preference)}
-                  />
-                </Badge>
-              ))}
-            </div>
-          </div>
+          <MealSelector
+            selectedMealIds={formData.meal_preferences}
+            onSelectionChange={handleMealPreferencesChange}
+            maxSelections={25}
+          />
 
           <div className="flex gap-3 pt-4">
             <Button type="submit" disabled={loading || !formData.name.trim()} className="flex-1">

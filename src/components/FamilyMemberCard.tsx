@@ -1,23 +1,23 @@
 import { User, Edit3, Heart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-interface FamilyMember {
-  id: string;
-  name: string;
-  age: number;
-  role: string;
-  dietaryRestrictions: string[];
-  preferences: string[];
-  avatar?: string;
-}
+import { Badge } from "@/components/ui/badge";
+import { useMeals } from "@/hooks/useMeals";
+import type { FamilyMember } from '@/hooks/useFamilyMembers';
 
 interface FamilyMemberCardProps {
   member: FamilyMember;
   onEdit: (member: FamilyMember) => void;
+  onDelete: (id: string) => void;
 }
 
-export const FamilyMemberCard = ({ member, onEdit }: FamilyMemberCardProps) => {
+export const FamilyMemberCard = ({ member, onEdit, onDelete }: FamilyMemberCardProps) => {
+  const { meals } = useMeals();
+  
+  const favoriteMeals = meals.filter(meal => 
+    member.meal_preferences?.includes(meal.id)
+  );
+
   return (
     <Card className="p-6 bg-gradient-gentle border-border hover:shadow-warm transition-all duration-300 animate-fade-in">
       <div className="flex items-start justify-between mb-4">
@@ -27,56 +27,53 @@ export const FamilyMemberCard = ({ member, onEdit }: FamilyMemberCardProps) => {
           </div>
           <div>
             <h3 className="font-semibold text-lg text-foreground">{member.name}</h3>
-            <p className="text-muted-foreground">{member.role} • {member.age} years old</p>
+            <p className="text-muted-foreground">
+              {member.role && `${member.role} • `}
+              {member.age && `${member.age} years old`}
+            </p>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onEdit(member)}
-          className="opacity-70 hover:opacity-100"
-        >
-          <Edit3 className="w-4 h-4" />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onEdit(member)}
+            className="opacity-70 hover:opacity-100"
+          >
+            <Edit3 className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
-      {member.dietaryRestrictions.length > 0 && (
-        <div className="mb-3">
-          <h4 className="text-sm font-medium text-foreground mb-1">Dietary Restrictions</h4>
-          <div className="flex flex-wrap gap-1">
-            {member.dietaryRestrictions.map((restriction, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-destructive/10 text-destructive text-xs rounded-full"
+      {favoriteMeals.length > 0 && (
+        <div>
+          <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-1">
+            <Heart className="w-3 h-3 fill-current text-primary" />
+            Favorite Meals ({favoriteMeals.length})
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {favoriteMeals.slice(0, 4).map((meal) => (
+              <Badge 
+                key={meal.id} 
+                variant="secondary" 
+                className="text-xs"
               >
-                {restriction}
-              </span>
+                {meal.name}
+              </Badge>
             ))}
+            {favoriteMeals.length > 4 && (
+              <Badge variant="outline" className="text-xs">
+                +{favoriteMeals.length - 4} more
+              </Badge>
+            )}
           </div>
         </div>
       )}
 
-      {member.preferences.length > 0 && (
-        <div>
-          <h4 className="text-sm font-medium text-foreground mb-1 flex items-center gap-1">
-            <Heart className="w-3 h-3" />
-            Preferences
-          </h4>
-          <div className="flex flex-wrap gap-1">
-            {member.preferences.slice(0, 3).map((preference, index) => (
-              <span
-                key={index}
-                className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
-              >
-                {preference}
-              </span>
-            ))}
-            {member.preferences.length > 3 && (
-              <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
-                +{member.preferences.length - 3} more
-              </span>
-            )}
-          </div>
+      {favoriteMeals.length === 0 && (
+        <div className="text-center py-4">
+          <Heart className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-50" />
+          <p className="text-muted-foreground text-sm">No favorite meals selected</p>
         </div>
       )}
     </Card>

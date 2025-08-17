@@ -18,6 +18,9 @@ interface LegacyFamilyMember {
   role: string;
   dietaryRestrictions: string[];
   preferences: string[];
+  user_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface DayPlan {
@@ -84,8 +87,11 @@ const Dashboard = () => {
     name: member.name,
     age: member.age || 0,
     role: member.role || '',
-    dietaryRestrictions: member.dietary_restrictions || [],
-    preferences: member.preferences || []
+    dietaryRestrictions: [],
+    preferences: [],
+    user_id: member.user_id,
+    created_at: member.created_at,
+    updated_at: member.updated_at
   }));
 
   if (loading) {
@@ -176,6 +182,7 @@ const Dashboard = () => {
                     key={member.id}
                     member={member}
                     onEdit={() => navigate('/profiles')}
+                    onDelete={() => navigate('/profiles')}
                   />
                 ))
               ) : (

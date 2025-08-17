@@ -9,8 +9,7 @@ export interface FamilyMember {
   name: string;
   age?: number;
   role?: string;
-  dietary_restrictions?: string[];
-  preferences?: string[];
+  meal_preferences?: string[];
   avatar_url?: string;
   created_at: string;
   updated_at: string;
