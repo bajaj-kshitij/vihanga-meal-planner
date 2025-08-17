@@ -239,6 +239,7 @@ export type Database = {
           difficulty_level: string | null
           id: string
           image_url: string | null
+          ingredients: string[] | null
           instructions: string[] | null
           is_favorite: boolean | null
           is_public: boolean | null
@@ -258,6 +259,7 @@ export type Database = {
           difficulty_level?: string | null
           id?: string
           image_url?: string | null
+          ingredients?: string[] | null
           instructions?: string[] | null
           is_favorite?: boolean | null
           is_public?: boolean | null
@@ -277,6 +279,7 @@ export type Database = {
           difficulty_level?: string | null
           id?: string
           image_url?: string | null
+          ingredients?: string[] | null
           instructions?: string[] | null
           is_favorite?: boolean | null
           is_public?: boolean | null
