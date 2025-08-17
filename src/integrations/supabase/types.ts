@@ -53,6 +53,141 @@ export type Database = {
         }
         Relationships: []
       }
+      ingredients: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          name: string
+          nutritional_info: Json | null
+          unit: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          nutritional_info?: Json | null
+          unit?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          nutritional_info?: Json | null
+          unit?: string | null
+        }
+        Relationships: []
+      }
+      meal_ingredients: {
+        Row: {
+          created_at: string
+          id: string
+          ingredient_id: string
+          meal_id: string
+          notes: string | null
+          quantity: number
+          unit: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ingredient_id: string
+          meal_id: string
+          notes?: string | null
+          quantity: number
+          unit?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ingredient_id?: string
+          meal_id?: string
+          notes?: string | null
+          quantity?: number
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_ingredients_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meal_ingredients_meal_id_fkey"
+            columns: ["meal_id"]
+            isOneToOne: false
+            referencedRelation: "meals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meals: {
+        Row: {
+          cook_time_minutes: number | null
+          created_at: string
+          cuisine_type: string | null
+          description: string | null
+          difficulty_level: string | null
+          id: string
+          image_url: string | null
+          instructions: string[] | null
+          is_favorite: boolean | null
+          is_public: boolean | null
+          meal_type: string
+          name: string
+          nutritional_info: Json | null
+          prep_time_minutes: number | null
+          servings: number | null
+          tags: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cook_time_minutes?: number | null
+          created_at?: string
+          cuisine_type?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          id?: string
+          image_url?: string | null
+          instructions?: string[] | null
+          is_favorite?: boolean | null
+          is_public?: boolean | null
+          meal_type: string
+          name: string
+          nutritional_info?: Json | null
+          prep_time_minutes?: number | null
+          servings?: number | null
+          tags?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cook_time_minutes?: number | null
+          created_at?: string
+          cuisine_type?: string | null
+          description?: string | null
+          difficulty_level?: string | null
+          id?: string
+          image_url?: string | null
+          instructions?: string[] | null
+          is_favorite?: boolean | null
+          is_public?: boolean | null
+          meal_type?: string
+          name?: string
+          nutritional_info?: Json | null
+          prep_time_minutes?: number | null
+          servings?: number | null
+          tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

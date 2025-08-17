@@ -146,7 +146,7 @@ const Dashboard = () => {
             onAddFamily={() => navigate('/profiles')}
             onLogMeals={() => console.log("Log meals")}
             onViewNutrition={() => console.log("View nutrition")}
-            onAddMeal={() => console.log("Add meal")}
+            onAddMeal={() => navigate('/meals')}
           />
         </section>
 
