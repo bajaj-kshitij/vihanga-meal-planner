@@ -2,41 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Family Meal Planner Design System - Warm, nurturing pastels for family life */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base warm cream background */
+    --background: 35 25% 97%;
+    --foreground: 25 20% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Warm card backgrounds */
+    --card: 35 30% 98%;
+    --card-foreground: 25 20% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Popover styling */
+    --popover: 35 30% 98%;
+    --popover-foreground: 25 20% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Sage green primary - calming and natural */
+    --primary: 120 25% 45%;
+    --primary-foreground: 35 30% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Soft peach secondary */
+    --secondary: 25 45% 88%;
+    --secondary-foreground: 25 30% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Gentle muted tones */
+    --muted: 35 20% 92%;
+    --muted-foreground: 25 15% 55%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Warm lavender accent */
+    --accent: 280 20% 88%;
+    --accent-foreground: 280 30% 25%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Gentle red for destructive actions */
+    --destructive: 0 55% 65%;
+    --destructive-foreground: 35 30% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Soft borders and inputs */
+    --border: 35 15% 85%;
+    --input: 35 15% 85%;
+    --ring: 120 25% 45%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+    
+    /* Family-specific design tokens */
+    --gradient-warm: linear-gradient(135deg, hsl(25 45% 88%), hsl(35 35% 90%));
+    --gradient-sage: linear-gradient(135deg, hsl(120 25% 45%), hsl(120 30% 50%));
+    --gradient-gentle: linear-gradient(180deg, hsl(35 25% 97%), hsl(35 20% 94%));
+    
+    /* Shadows for depth */
+    --shadow-soft: 0 4px 20px -4px hsl(25 20% 15% / 0.1);
+    --shadow-warm: 0 8px 30px -8px hsl(120 25% 45% / 0.2);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
 
