@@ -102,6 +102,14 @@ const Dashboard = () => {
         {/* Stats */}
         <DashboardStats />
 
+        {/* Today's Plan */}
+        <section>
+          <MealPlanPreview 
+            weekPlan={weekPlan}
+            onViewFullPlan={() => navigate('/planner')}
+          />
+        </section>
+
         {/* Quick Actions */}
         <section>
           <h2 className="text-2xl font-semibold text-foreground mb-6">Quick Actions</h2>
@@ -111,14 +119,6 @@ const Dashboard = () => {
             onAddFamily={() => navigate('/profiles')}
             onLogMeals={() => console.log("Log meals")}
             onAddMeal={() => navigate('/meals')}
-          />
-        </section>
-
-        {/* Today's Plan */}
-        <section>
-          <MealPlanPreview 
-            weekPlan={weekPlan}
-            onViewFullPlan={() => navigate('/planner')}
           />
         </section>
       </div>
