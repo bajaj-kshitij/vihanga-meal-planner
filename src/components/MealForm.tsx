@@ -33,9 +33,11 @@ interface FormData {
 
 export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) => {
   const [instructions, setInstructions] = useState<string[]>(meal?.instructions || [""]);
+  const [ingredients, setIngredients] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>(meal?.tags || []);
   const [newTag, setNewTag] = useState("");
   const [newInstruction, setNewInstruction] = useState("");
+  const [newIngredient, setNewIngredient] = useState("");
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: {
@@ -62,6 +64,17 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
     setInstructions(instructions.filter((_, i) => i !== index));
   };
 
+  const addIngredient = () => {
+    if (newIngredient.trim()) {
+      setIngredients([...ingredients, newIngredient.trim()]);
+      setNewIngredient("");
+    }
+  };
+
+  const removeIngredient = (index: number) => {
+    setIngredients(ingredients.filter((_, i) => i !== index));
+  };
+
   const addTag = () => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
       setTags([...tags, newTag.trim()]);
@@ -75,9 +88,11 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
 
   const onFormSubmit = async (data: FormData) => {
     const finalInstructions = instructions.filter(inst => inst.trim());
+    const finalIngredients = ingredients.filter(ing => ing.trim());
     const mealData = {
       ...data,
       instructions: finalInstructions.length > 0 ? finalInstructions : undefined,
+      ingredients: finalIngredients.length > 0 ? finalIngredients : undefined,
       tags: tags.length > 0 ? tags : undefined,
     };
     onSubmit(mealData);
@@ -203,6 +218,49 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
                 min="0"
                 {...register("cook_time_minutes", { valueAsNumber: true })}
               />
+            </div>
+          </div>
+
+          {/* Ingredients */}
+          <div className="space-y-2">
+            <Label>Ingredients</Label>
+            <div className="space-y-2">
+              {ingredients.map((ingredient, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <span className="text-sm text-muted-foreground min-w-[2rem] mt-2">
+                    {index + 1}.
+                  </span>
+                  <div className="flex-1 text-sm border rounded-md p-2 bg-muted/30">
+                    {ingredient}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeIngredient(index)}
+                    className="shrink-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+              <div className="flex gap-2">
+                <Input
+                  value={newIngredient}
+                  onChange={(e) => setNewIngredient(e.target.value)}
+                  placeholder="Add ingredient (e.g., 2 cups rice, 1 tbsp oil)..."
+                  className="flex-1"
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addIngredient())}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addIngredient}
+                  disabled={!newIngredient.trim()}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
 
