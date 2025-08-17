@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Settings, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { DashboardStats } from "@/components/DashboardStats";
 import { QuickActions } from "@/components/QuickActions";
 import { MealPlanPreview } from "@/components/MealPlanPreview";
 import { FamilyMemberCard } from "@/components/FamilyMemberCard";
+import UserMenu from "@/components/UserMenu";
 import heroImage from "@/assets/family-kitchen-hero.jpg";
 
 interface FamilyMember {
@@ -30,6 +33,30 @@ interface DayPlan {
 }
 
 const Dashboard = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-gentle flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   const [familyMembers] = useState<FamilyMember[]>([
     {
       id: "1",
@@ -95,7 +122,7 @@ const Dashboard = () => {
             <div className="text-white">
               <h1 className="text-4xl font-bold mb-2 animate-fade-in">Family Meal Planner</h1>
               <p className="text-xl opacity-90 animate-fade-in" style={{ animationDelay: "200ms" }}>
-                Nourishing your family, one meal at a time
+                Welcome back, {user.user_metadata?.full_name || user.user_metadata?.name || 'there'}!
               </p>
             </div>
             <div className="flex gap-3">
@@ -105,6 +132,7 @@ const Dashboard = () => {
               <Button variant="outline" size="icon" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                 <Settings className="w-4 h-4" />
               </Button>
+              <UserMenu />
             </div>
           </div>
         </div>
