@@ -226,7 +226,7 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
                   // Track failure reasons
                   let reason = "Unknown error";
                   if (error instanceof Error) {
-                    if (error.message.includes("duplicate") || error.message.includes("unique")) {
+                    if (error.message.includes("duplicate") || error.message.includes("unique") || error.message.includes("unique_meal_name_per_user")) {
                       reason = "Duplicate meal name";
                     } else if (error.message.includes("constraint") || error.message.includes("validation")) {
                       reason = "Data validation failed";
