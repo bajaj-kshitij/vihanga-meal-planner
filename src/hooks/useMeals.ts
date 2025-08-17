@@ -28,7 +28,6 @@ export interface Ingredient {
   name: string;
   category: string;
   unit: string;
-  
   created_at: string;
 }
 
@@ -120,7 +119,6 @@ export const useMeals = () => {
         instructions: processedInstructions.length > 0 ? processedInstructions : mealData.instructions,
         image_url: mealData.image_url,
         tags: mealData.tags,
-        
         is_favorite: mealData.is_favorite || false,
         is_public: mealData.is_public || false,
         user_id: user.id
@@ -165,7 +163,7 @@ export const useMeals = () => {
         .update(updates)
         .eq("id", id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 

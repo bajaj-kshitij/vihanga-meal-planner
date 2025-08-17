@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, Search } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { useInventory, InventoryItem } from "@/hooks/useInventory";
 import { MealInventoryItem } from "@/hooks/useMeals";
 
@@ -16,16 +16,11 @@ interface MealInventorySelectorProps {
 
 export const MealInventorySelector = ({ selectedItems, onAddItem, onRemoveItem }: MealInventorySelectorProps) => {
   const { items } = useInventory();
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedInventoryItem, setSelectedInventoryItem] = useState("");
   const [quantity, setQuantity] = useState<number>(1);
   const [unit, setUnit] = useState("");
   const [description, setDescription] = useState("");
 
-  const filteredItems = items.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const selectedInventoryIds = selectedItems.map(item => item.inventory_item_id);
 
@@ -69,15 +64,6 @@ export const MealInventorySelector = ({ selectedItems, onAddItem, onRemoveItem }
 
       {/* Add New Item */}
       <div className="space-y-3 p-4 border rounded-lg">
-        <div className="flex items-center gap-2">
-          <Search className="w-4 h-4" />
-          <Input
-            placeholder="Search inventory items..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1"
-          />
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="space-y-2">
@@ -87,7 +73,7 @@ export const MealInventorySelector = ({ selectedItems, onAddItem, onRemoveItem }
                 <SelectValue placeholder="Select an item" />
               </SelectTrigger>
               <SelectContent>
-                {filteredItems
+                {items
                   .filter(item => !selectedInventoryIds.includes(item.id))
                   .map((item) => (
                     <SelectItem key={item.id} value={item.id}>
