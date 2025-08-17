@@ -8,9 +8,10 @@ import { QuickActions } from "@/components/QuickActions";
 import { MealPlanPreview } from "@/components/MealPlanPreview";
 import { FamilyMemberCard } from "@/components/FamilyMemberCard";
 import UserMenu from "@/components/UserMenu";
+import { useFamilyMembers } from "@/hooks/useFamilyMembers";
 import heroImage from "@/assets/family-kitchen-hero.jpg";
 
-interface FamilyMember {
+interface LegacyFamilyMember {
   id: string;
   name: string;
   age: number;
@@ -35,6 +36,7 @@ interface DayPlan {
 const Dashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { familyMembers } = useFamilyMembers();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -57,24 +59,15 @@ const Dashboard = () => {
     return null;
   }
 
-  const [familyMembers] = useState<FamilyMember[]>([
-    {
-      id: "1",
-      name: "Sarah",
-      age: 34,
-      role: "Mom",
-      dietaryRestrictions: ["Gluten-free"],
-      preferences: ["Mediterranean", "Salads", "Fish"]
-    },
-    {
-      id: "2", 
-      name: "Mike",
-      age: 36,
-      role: "Dad",
-      dietaryRestrictions: [],
-      preferences: ["BBQ", "Pasta", "Asian cuisine"]
-    }
-  ]);
+  // Convert database family members to legacy format for existing components
+  const legacyFamilyMembers: LegacyFamilyMember[] = familyMembers.map(member => ({
+    id: member.id,
+    name: member.name,
+    age: member.age || 0,
+    role: member.role || '',
+    dietaryRestrictions: member.dietary_restrictions || [],
+    preferences: member.preferences || []
+  }));
 
   const [weekPlan] = useState<DayPlan[]>([
     {
@@ -149,7 +142,7 @@ const Dashboard = () => {
           <QuickActions
             onPlanMeals={() => console.log("Plan meals")}
             onManageInventory={() => console.log("Manage inventory")}
-            onAddFamily={() => console.log("Add family")}
+            onAddFamily={() => navigate('/profiles')}
             onLogMeals={() => console.log("Log meals")}
             onViewNutrition={() => console.log("View nutrition")}
             onAddMeal={() => console.log("Add meal")}
@@ -170,19 +163,29 @@ const Dashboard = () => {
           <section>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-foreground">Family Members</h2>
-              <Button variant="sage" size="sm">
+              <Button variant="sage" size="sm" onClick={() => navigate('/profiles')}>
                 <Plus className="w-4 h-4 mr-2" />
-                Add Member
+                Manage Family
               </Button>
             </div>
             <div className="space-y-4">
-              {familyMembers.map((member) => (
-                <FamilyMemberCard
-                  key={member.id}
-                  member={member}
-                  onEdit={(member) => console.log("Edit member", member)}
-                />
-              ))}
+              {legacyFamilyMembers.length > 0 ? (
+                legacyFamilyMembers.map((member) => (
+                  <FamilyMemberCard
+                    key={member.id}
+                    member={member}
+                    onEdit={() => navigate('/profiles')}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>No family members added yet.</p>
+                  <Button variant="sage" className="mt-4" onClick={() => navigate('/profiles')}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Your First Family Member
+                  </Button>
+                </div>
+              )}
             </div>
           </section>
         </div>

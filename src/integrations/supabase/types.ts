@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      family_members: {
+        Row: {
+          age: number | null
+          avatar_url: string | null
+          created_at: string
+          dietary_restrictions: string[] | null
+          id: string
+          name: string
+          preferences: string[] | null
+          role: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          dietary_restrictions?: string[] | null
+          id?: string
+          name: string
+          preferences?: string[] | null
+          role?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          dietary_restrictions?: string[] | null
+          id?: string
+          name?: string
+          preferences?: string[] | null
+          role?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
