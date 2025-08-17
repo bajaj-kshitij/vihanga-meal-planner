@@ -1,5 +1,7 @@
-import { TrendingUp, Calendar, Users, ShoppingCart } from "lucide-react";
+import { TrendingUp, Calendar, Package } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useMealPlans } from "@/hooks/useMealPlans";
+import { useInventory } from "@/hooks/useInventory";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -33,32 +35,34 @@ const StatCard = ({ icon, title, value, change, trend }: StatCardProps) => {
 };
 
 export const DashboardStats = () => {
+  const { getWeekPlan } = useMealPlans();
+  const { getLowStockItems } = useInventory();
+  
+  const weekPlan = getWeekPlan();
+  const totalMealsPlanned = weekPlan.reduce((total, day) => total + day.meals.length, 0);
+  const lowStockItems = getLowStockItems();
+  
+  const lowStockTrend: "up" | "down" = lowStockItems.length > 5 ? "down" : "up";
+  
   const stats = [
     {
       icon: <Calendar className="w-5 h-5 text-secondary-foreground" />,
       title: "Meals Planned",
-      value: "7",
-      change: "This Week",
+      value: totalMealsPlanned.toString(),
+      change: "Next 7 Days",
       trend: "neutral" as const
     },
     {
-      icon: <Users className="w-5 h-5 text-secondary-foreground" />,
-      title: "Family Members",
-      value: "4",
-      change: "Active",
-      trend: "neutral" as const
-    },
-    {
-      icon: <ShoppingCart className="w-5 h-5 text-secondary-foreground" />,
-      title: "Groceries",
-      value: "23",
-      change: "Items in stock",
-      trend: "up" as const
+      icon: <Package className="w-5 h-5 text-secondary-foreground" />,
+      title: "Low Inventory",
+      value: lowStockItems.length.toString(),
+      change: "Items below threshold",
+      trend: lowStockTrend
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {stats.map((stat, index) => (
         <div key={index} className="animate-fade-in" style={{ animationDelay: `${index * 150}ms` }}>
           <StatCard {...stat} />

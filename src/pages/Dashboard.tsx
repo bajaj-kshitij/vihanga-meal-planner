@@ -114,47 +114,13 @@ const Dashboard = () => {
           />
         </section>
 
-        {/* Today's Plan & Family Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Meal Plan Preview */}
-          <section>
-            <MealPlanPreview 
-              weekPlan={weekPlan}
-              onViewFullPlan={() => navigate('/planner')}
-            />
-          </section>
-
-          {/* Family Members */}
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-foreground">Family Members</h2>
-              <Button variant="sage" size="sm" onClick={() => navigate('/profiles')}>
-                <Plus className="w-4 h-4 mr-2" />
-                Manage Family
-              </Button>
-            </div>
-            <div className="space-y-4">
-              {familyMembers.length > 0 ? (
-                familyMembers.map((member) => (
-                  <FamilyMemberCard
-                    key={member.id}
-                    member={member}
-                    onEdit={() => navigate('/profiles')}
-                    onDelete={() => navigate('/profiles')}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>No family members added yet.</p>
-                  <Button variant="sage" className="mt-4" onClick={() => navigate('/profiles')}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Your First Family Member
-                  </Button>
-                </div>
-              )}
-            </div>
-          </section>
-        </div>
+        {/* Today's Plan */}
+        <section>
+          <MealPlanPreview 
+            weekPlan={weekPlan}
+            onViewFullPlan={() => navigate('/planner')}
+          />
+        </section>
       </div>
     </div>
   );
