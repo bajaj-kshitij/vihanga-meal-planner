@@ -9,13 +9,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { X, Plus } from "lucide-react";
-import { Meal } from "@/hooks/useMeals";
+import { Meal, MealInventoryItem, useMeals } from "@/hooks/useMeals";
+import { MealInventorySelector } from "./MealInventorySelector";
 
 interface MealFormProps {
   meal?: Meal;
   onSubmit: (data: Partial<Meal>) => void;
   onCancel: () => void;
   loading?: boolean;
+}
+
+interface MealFormData extends Partial<Meal> {
+  inventoryItems?: MealInventoryItem[];
 }
 
 interface FormData {
@@ -31,10 +36,12 @@ interface FormData {
 }
 
 export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) => {
+  const { getMealInventoryItems, addMealInventoryItem, removeMealInventoryItem } = useMeals();
   const [instructions, setInstructions] = useState<string[]>(meal?.instructions || [""]);
   const [tags, setTags] = useState<string[]>(meal?.tags || []);
   const [newTag, setNewTag] = useState("");
   const [newInstruction, setNewInstruction] = useState("");
+  const [inventoryItems, setInventoryItems] = useState<MealInventoryItem[]>([]);
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: {
@@ -72,14 +79,56 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const onFormSubmit = (data: FormData) => {
+  const onFormSubmit = async (data: FormData) => {
     const finalInstructions = instructions.filter(inst => inst.trim());
-    onSubmit({
+    const mealData: MealFormData = {
       ...data,
       instructions: finalInstructions.length > 0 ? finalInstructions : undefined,
       tags: tags.length > 0 ? tags : undefined,
-    });
+      inventoryItems
+    };
+    onSubmit(mealData);
   };
+
+  const handleAddInventoryItem = async (inventoryItemId: string, quantity: number, unit: string, description?: string) => {
+    if (meal?.id) {
+      await addMealInventoryItem(meal.id, inventoryItemId, quantity, unit, description);
+      loadInventoryItems();
+    } else {
+      // For new meals, add to temporary state
+      const tempItem: MealInventoryItem = {
+        id: `temp-${Date.now()}`,
+        meal_id: '',
+        inventory_item_id: inventoryItemId,
+        quantity,
+        unit,
+        description
+      };
+      setInventoryItems(prev => [...prev, tempItem]);
+    }
+  };
+
+  const handleRemoveInventoryItem = async (id: string) => {
+    if (id.startsWith('temp-')) {
+      setInventoryItems(prev => prev.filter(item => item.id !== id));
+    } else {
+      await removeMealInventoryItem(id);
+      loadInventoryItems();
+    }
+  };
+
+  const loadInventoryItems = async () => {
+    if (meal?.id) {
+      const items = await getMealInventoryItems(meal.id);
+      setInventoryItems(items);
+    }
+  };
+
+  useEffect(() => {
+    if (meal?.id) {
+      loadInventoryItems();
+    }
+  }, [meal?.id]);
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -245,6 +294,13 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
               </div>
             </div>
           </div>
+
+          {/* Ingredients from Inventory */}
+          <MealInventorySelector
+            selectedItems={inventoryItems}
+            onAddItem={handleAddInventoryItem}
+            onRemoveItem={handleRemoveInventoryItem}
+          />
 
           {/* Tags */}
           <div className="space-y-2">

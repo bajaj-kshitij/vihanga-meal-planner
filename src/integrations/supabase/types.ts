@@ -188,6 +188,51 @@ export type Database = {
           },
         ]
       }
+      meal_inventory_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          inventory_item_id: string
+          meal_id: string
+          quantity: number
+          unit: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          inventory_item_id: string
+          meal_id: string
+          quantity: number
+          unit?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          inventory_item_id?: string
+          meal_id?: string
+          quantity?: number
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_meal_inventory_items_inventory"
+            columns: ["inventory_item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_meal_inventory_items_meal"
+            columns: ["meal_id"]
+            isOneToOne: false
+            referencedRelation: "meals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meals: {
         Row: {
           cook_time_minutes: number | null
