@@ -71,9 +71,15 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
       rowErrors.push(`Row ${index + 1}: Serving must be a valid number greater than 0`);
     }
     
-    const validMealTypes = ["breakfast", "lunch", "dinner", "snack"];
-    if (!validMealTypes.includes(row["Meal Type"]?.toLowerCase())) {
-      rowErrors.push(`Row ${index + 1}: Meal Type must be one of: ${validMealTypes.join(", ")}`);
+    const validMealTypes = [
+      "appetizer", "breakfast", "brunch", "dessert", "dinner", "eggetarian",
+      "high-protein-vegetarian", "indian-breakfast", "lunch", "main-course", 
+      "no-onion-no-garlic", "non-vegetarian", "north-indian-breakfast", 
+      "one-pot-dish", "side-dish", "snack", "south-indian-breakfast", 
+      "sugar-free-diet", "vegan", "vegetarian", "world-breakfast"
+    ];
+    if (!validMealTypes.includes(row["Meal Type"]?.toLowerCase().replace(/\s+/g, '-'))) {
+      rowErrors.push(`Row ${index + 1}: Invalid Meal Type. Valid options are: ${validMealTypes.join(", ")}`);
     }
     
     const validDifficulties = ["easy", "medium", "hard"];
@@ -171,7 +177,7 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
                     prep_time_minutes: parseInt(row["Prep Time"]),
                     cook_time_minutes: parseInt(row["Cook Time"]),
                     cuisine_type: row["Cuisine Type"]?.trim() || "Indian",
-                    meal_type: row["Meal Type"].toLowerCase() as "breakfast" | "lunch" | "dinner" | "snack",
+                    meal_type: row["Meal Type"].toLowerCase().replace(/\s+/g, '-'),
                     difficulty_level: row["Difficulty"].toLowerCase() as "easy" | "medium" | "hard",
                     servings: parseInt(row["Serving"]),
                     instructions: parseInstructions(row["Cooking Instructions"]),
@@ -249,7 +255,7 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
               <div>4. Prep Time (minutes)</div>
               <div>5. Cook Time (minutes)</div>
               <div>6. Cuisine Type</div>
-              <div>7. Meal Type (breakfast/lunch/dinner/snack)</div>
+              <div>7. Meal Type (see validation error for options)</div>
               <div>8. Difficulty (easy/medium/hard)</div>
               <div>9. Serving (number)</div>
               <div>10. Cooking Instructions</div>
