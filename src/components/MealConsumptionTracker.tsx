@@ -100,11 +100,11 @@ const DayConsumption = ({
                         }`}
                       >
                         <div className="flex-1">
-                          <p className="font-medium">{plannedMeal.meal?.name}</p>
-                          {plannedMeal.meal?.prep_time_minutes && (
+                          <p className="font-medium">{plannedMeal.meal?.name || plannedMeal.meals?.name}</p>
+                          {(plannedMeal.meal?.prep_time_minutes || plannedMeal.meals?.prep_time_minutes) && (
                             <p className="text-sm text-muted-foreground flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              {plannedMeal.meal.prep_time_minutes + (plannedMeal.meal.cook_time_minutes || 0)} min
+                              {(plannedMeal.meal?.prep_time_minutes || plannedMeal.meals?.prep_time_minutes) + ((plannedMeal.meal?.cook_time_minutes || plannedMeal.meals?.cook_time_minutes) || 0)} min
                             </p>
                           )}
                         </div>
@@ -119,7 +119,12 @@ const DayConsumption = ({
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => onMarkConsumed(plannedMeal.meal.id, mealType, true, plannedMeal.id)}
+                                onClick={() => onMarkConsumed(
+                                  plannedMeal.meal?.id || plannedMeal.meals?.id || plannedMeal.meal_id, 
+                                  mealType, 
+                                  true, 
+                                  plannedMeal.id
+                                )}
                                 className="gap-1"
                               >
                                 <CheckCircle className="h-3 w-3" />
@@ -154,7 +159,7 @@ const DayConsumption = ({
                         className="flex items-center justify-between p-3 rounded-lg border bg-blue-50 border-blue-200"
                       >
                         <div className="flex-1">
-                          <p className="font-medium">{consumption.meal?.name}</p>
+                          <p className="font-medium">{consumption.meal?.name || consumption.meals?.name}</p>
                           {consumption.notes && (
                             <p className="text-sm text-muted-foreground">{consumption.notes}</p>
                           )}
@@ -284,56 +289,66 @@ export const MealConsumptionTracker = () => {
         </TabsContent>
 
         <TabsContent value="history" className="space-y-4">
-          <div className="grid gap-4">
-            {consumption
-              .reduce((acc, c) => {
-                const date = c.consumed_date;
-                if (!acc[date]) acc[date] = [];
-                acc[date].push(c);
-                return acc;
-              }, {} as Record<string, typeof consumption>)
-              && Object.entries(
-                consumption.reduce((acc, c) => {
+          {consumption.length === 0 ? (
+            <div className="text-center py-12">
+              <Utensils className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">No Consumption History</h3>
+              <p className="text-muted-foreground mb-6">
+                Start tracking your meals to see your consumption history here.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {consumption
+                .reduce((acc, c) => {
                   const date = c.consumed_date;
                   if (!acc[date]) acc[date] = [];
                   acc[date].push(c);
                   return acc;
                 }, {} as Record<string, typeof consumption>)
-              )
-              .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
-              .slice(0, 30)
-              .map(([date, dayConsumption]) => (
-                <Card key={date}>
-                  <CardHeader>
-                    <CardTitle className="text-lg">
-                      {format(new Date(date), 'EEEE, MMMM d, yyyy')}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-2">
-                      {MEAL_TYPES.map(mealType => {
-                        const mealsForType = dayConsumption.filter(c => c.meal_type === mealType);
-                        if (mealsForType.length === 0) return null;
-                        
-                        return (
-                          <div key={mealType} className="flex items-center gap-2">
-                            <Badge className={getMealTypeColor(mealType)}>{mealType}</Badge>
-                            <div className="flex flex-wrap gap-1">
-                              {mealsForType.map(c => (
-                                <span key={c.id} className="text-sm">
-                                  {c.meal?.name}
-                                  {c.was_planned && <span className="text-green-600 ml-1">✓</span>}
-                                </span>
-                              ))}
+                && Object.entries(
+                  consumption.reduce((acc, c) => {
+                    const date = c.consumed_date;
+                    if (!acc[date]) acc[date] = [];
+                    acc[date].push(c);
+                    return acc;
+                  }, {} as Record<string, typeof consumption>)
+                )
+                .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
+                .slice(0, 30)
+                .map(([date, dayConsumption]) => (
+                  <Card key={date}>
+                    <CardHeader>
+                      <CardTitle className="text-lg">
+                        {format(new Date(date), 'EEEE, MMMM d, yyyy')}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid gap-2">
+                        {MEAL_TYPES.map(mealType => {
+                          const mealsForType = dayConsumption.filter(c => c.meal_type === mealType);
+                          if (mealsForType.length === 0) return null;
+                          
+                          return (
+                            <div key={mealType} className="flex items-center gap-2">
+                              <Badge className={getMealTypeColor(mealType)}>{mealType}</Badge>
+                              <div className="flex flex-wrap gap-1">
+                                {mealsForType.map(c => (
+                                  <span key={c.id} className="text-sm">
+                                    {c.meal?.name || c.meals?.name}
+                                    {c.was_planned && <span className="text-green-600 ml-1">✓</span>}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 

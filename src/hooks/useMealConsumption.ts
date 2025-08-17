@@ -23,6 +23,15 @@ export interface MealConsumption {
     cook_time_minutes?: number;
     servings?: number;
   };
+  meals?: {
+    id: string;
+    name: string;
+    description?: string;
+    image_url?: string;
+    prep_time_minutes?: number;
+    cook_time_minutes?: number;
+    servings?: number;
+  };
 }
 
 export const useMealConsumption = () => {
@@ -40,7 +49,7 @@ export const useMealConsumption = () => {
         .from('meal_consumption')
         .select(`
           *,
-          meal:meals (
+          meals!meal_consumption_meal_id_fkey (
             id,
             name,
             description,

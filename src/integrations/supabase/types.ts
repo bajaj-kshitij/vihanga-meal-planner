@@ -177,7 +177,22 @@ export type Database = {
           user_id?: string
           was_planned?: boolean
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "meal_consumption_meal_id_fkey"
+            columns: ["meal_id"]
+            isOneToOne: false
+            referencedRelation: "meals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meal_consumption_meal_plan_meal_id_fkey"
+            columns: ["meal_plan_meal_id"]
+            isOneToOne: false
+            referencedRelation: "meal_plan_meals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       meal_ingredients: {
         Row: {
