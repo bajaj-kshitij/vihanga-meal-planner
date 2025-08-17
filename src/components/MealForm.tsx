@@ -33,7 +33,7 @@ interface FormData {
 
 export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) => {
   const [instructions, setInstructions] = useState<string[]>(meal?.instructions || [""]);
-  const [ingredients, setIngredients] = useState<string[]>([]);
+  const [ingredients, setIngredients] = useState<string[]>(meal?.ingredients || []);
   const [tags, setTags] = useState<string[]>(meal?.tags || []);
   const [newTag, setNewTag] = useState("");
   const [newInstruction, setNewInstruction] = useState("");

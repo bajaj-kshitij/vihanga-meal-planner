@@ -15,6 +15,7 @@ export interface Meal {
   servings: number;
   difficulty_level: "easy" | "medium" | "hard";
   instructions?: string[];
+  ingredients?: string[];
   image_url?: string;
   tags?: string[];
   is_favorite: boolean;
@@ -103,6 +104,7 @@ export const useMeals = () => {
         servings: mealData.servings || 4,
         difficulty_level: mealData.difficulty_level || "medium",
         instructions: processedInstructions.length > 0 ? processedInstructions : mealData.instructions,
+        ingredients: mealData.ingredients,
         image_url: mealData.image_url,
         tags: mealData.tags,
         is_favorite: mealData.is_favorite || false,
