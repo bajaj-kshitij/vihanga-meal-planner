@@ -1,19 +1,17 @@
 import { useState } from "react";
-import { Plus, Search, Filter, ChefHat, Upload, Download } from "lucide-react";
+import { Plus, Search, Filter, ChefHat, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealCard } from "./MealCard";
 import { MealForm } from "./MealForm";
-import { RecipeImport } from "./RecipeImport";
 import { CSVImport } from "./CSVImport";
 import { Meal, useMeals } from "@/hooks/useMeals";
 
 export const MealsList = () => {
   const { meals, loading, createMeal, updateMeal, deleteMeal } = useMeals();
   const [showForm, setShowForm] = useState(false);
-  const [showImport, setShowImport] = useState(false);
   const [showCSVImport, setShowCSVImport] = useState(false);
   const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -86,12 +84,6 @@ export const MealsList = () => {
           <p className="text-muted-foreground">Loading meals...</p>
         </div>
       </div>
-    );
-  }
-
-  if (showImport) {
-    return (
-      <RecipeImport onClose={() => setShowImport(false)} />
     );
   }
 
@@ -207,10 +199,6 @@ export const MealsList = () => {
           <Button onClick={() => setShowCSVImport(true)} variant="outline" className="gap-2">
             <Upload className="w-4 h-4" />
             CSV Import
-          </Button>
-          <Button onClick={() => setShowImport(true)} variant="outline" className="gap-2">
-            <Download className="w-4 h-4" />
-            Recipe API
           </Button>
           <Button onClick={() => setShowForm(true)} className="gap-2">
             <Plus className="w-4 h-4" />
