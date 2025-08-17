@@ -41,20 +41,6 @@ export interface MealIngredient {
   ingredient?: Ingredient;
 }
 
-export interface MealInventoryItem {
-  id: string;
-  meal_id: string;
-  inventory_item_id: string;
-  quantity: number;
-  unit: string;
-  description?: string;
-  inventory_item?: {
-    id: string;
-    name: string;
-    category: string;
-    unit: string;
-  };
-}
 
 export const useMeals = () => {
   const { user } = useAuth();
@@ -254,58 +240,6 @@ export const useMeals = () => {
     }
   };
 
-  const getMealInventoryItems = async (mealId: string): Promise<MealInventoryItem[]> => {
-    try {
-      const { data, error } = await supabase
-        .from("meal_inventory_items")
-        .select(`
-          *,
-          inventory_item:inventory_items(id, name, category, unit)
-        `)
-        .eq("meal_id", mealId);
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      console.error("Error fetching meal inventory items:", error);
-      return [];
-    }
-  };
-
-  const addMealInventoryItem = async (mealId: string, inventoryItemId: string, quantity: number, unit: string, description?: string) => {
-    try {
-      const { error } = await supabase
-        .from("meal_inventory_items")
-        .insert([{
-          meal_id: mealId,
-          inventory_item_id: inventoryItemId,
-          quantity,
-          unit,
-          description
-        }]);
-
-      if (error) throw error;
-      toast.success("Ingredient added to meal");
-    } catch (error) {
-      console.error("Error adding meal inventory item:", error);
-      toast.error("Failed to add ingredient");
-    }
-  };
-
-  const removeMealInventoryItem = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from("meal_inventory_items")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-      toast.success("Ingredient removed from meal");
-    } catch (error) {
-      console.error("Error removing meal inventory item:", error);
-      toast.error("Failed to remove ingredient");
-    }
-  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -330,9 +264,6 @@ export const useMeals = () => {
     deleteMeal,
     getMealIngredients,
     addMealIngredient,
-    createIngredient,
-    getMealInventoryItems,
-    addMealInventoryItem,
-    removeMealInventoryItem
+    createIngredient
   };
 };
