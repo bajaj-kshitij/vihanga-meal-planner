@@ -38,37 +38,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { familyMembers } = useFamilyMembers();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-gentle flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
-
-  // Convert database family members to legacy format for existing components
-  const legacyFamilyMembers: LegacyFamilyMember[] = familyMembers.map(member => ({
-    id: member.id,
-    name: member.name,
-    age: member.age || 0,
-    role: member.role || '',
-    dietaryRestrictions: member.dietary_restrictions || [],
-    preferences: member.preferences || []
-  }));
-
+  // Move all useState hooks to the top before any early returns
   const [weekPlan] = useState<DayPlan[]>([
     {
       date: new Date().toDateString(),
@@ -101,6 +71,37 @@ const Dashboard = () => {
       ]
     }
   ]);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  // Convert database family members to legacy format for existing components
+  const legacyFamilyMembers: LegacyFamilyMember[] = familyMembers.map(member => ({
+    id: member.id,
+    name: member.name,
+    age: member.age || 0,
+    role: member.role || '',
+    dietaryRestrictions: member.dietary_restrictions || [],
+    preferences: member.preferences || []
+  }));
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-gentle flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-gentle">
