@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { CheckCircle, XCircle, Plus, ChevronLeft, ChevronRight, Utensils, Clock } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CheckCircle, XCircle, Plus, ChevronLeft, ChevronRight, Utensils, Clock, Save } from "lucide-react";
 import { useMealConsumption } from "@/hooks/useMealConsumption";
 import { useMealPlans } from "@/hooks/useMealPlans";
 import { useMeals } from "@/hooks/useMeals";
@@ -20,7 +21,9 @@ interface DayConsumptionProps {
   onMarkConsumed: (mealId: string, mealType: string, wasPlanned: boolean, mealPlanMealId?: string) => void;
   onRemoveConsumption: (consumptionId: string) => void;
   onAddMeal: (mealType: string) => void;
+  onConfirmDay: (selectedPlannedMeals: string[]) => void;
   selectedMealType: string | null;
+  canEdit: boolean;
 }
 
 const DayConsumption = ({ 
@@ -30,8 +33,11 @@ const DayConsumption = ({
   onMarkConsumed, 
   onRemoveConsumption,
   onAddMeal,
-  selectedMealType
+  onConfirmDay,
+  selectedMealType,
+  canEdit
 }: DayConsumptionProps) => {
+  const [selectedPlannedMeals, setSelectedPlannedMeals] = useState<string[]>([]);
   const getMealTypeColor = (type: string) => {
     const colors: Record<string, string> = {
       breakfast: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
@@ -54,13 +60,40 @@ const DayConsumption = ({
     return consumption.some(c => c.meal_plan_meal_id === plannedMealId);
   };
 
+  const handlePlannedMealSelection = (plannedMealId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedPlannedMeals(prev => [...prev, plannedMealId]);
+    } else {
+      setSelectedPlannedMeals(prev => prev.filter(id => id !== plannedMealId));
+    }
+  };
+
+  const handleConfirmDay = () => {
+    onConfirmDay(selectedPlannedMeals);
+    setSelectedPlannedMeals([]);
+  };
+
+  const hasUnconsumedPlannedMeals = plannedMeals.some(pm => !isPlannedMealConsumed(pm.id));
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Utensils className="h-5 w-5" />
-          {format(date, 'EEEE, MMMM d, yyyy')}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Utensils className="h-5 w-5" />
+            {format(date, 'EEEE, MMMM d, yyyy')}
+          </CardTitle>
+          {canEdit && hasUnconsumedPlannedMeals && selectedPlannedMeals.length > 0 && (
+            <Button
+              onClick={handleConfirmDay}
+              className="gap-2"
+              size="sm"
+            >
+              <Save className="h-4 w-4" />
+              Confirm Selected ({selectedPlannedMeals.length})
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {MEAL_TYPES.map(mealType => {
@@ -77,21 +110,24 @@ const DayConsumption = ({
                 </h4>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => onAddMeal(mealType)}
-                  className="gap-1"
+                  className="gap-1 text-muted-foreground"
+                  disabled={!canEdit}
                 >
                   <Plus className="h-3 w-3" />
-                  Add Meal
+                  Add Optional
                 </Button>
               </div>
 
               {/* Planned Meals */}
               {plannedMeals.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Planned:</p>
+                  <p className="text-sm font-medium text-muted-foreground">Planned meals:</p>
                   {plannedMeals.map(plannedMeal => {
                     const isConsumed = isPlannedMealConsumed(plannedMeal.id);
+                    const isSelected = selectedPlannedMeals.includes(plannedMeal.id);
+                    
                     return (
                       <div
                         key={plannedMeal.id}
@@ -99,14 +135,25 @@ const DayConsumption = ({
                           isConsumed ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'
                         }`}
                       >
-                        <div className="flex-1">
-                          <p className="font-medium">{plannedMeal.meal?.name || plannedMeal.meals?.name}</p>
-                          {(plannedMeal.meal?.prep_time_minutes || plannedMeal.meals?.prep_time_minutes) && (
-                            <p className="text-sm text-muted-foreground flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {(plannedMeal.meal?.prep_time_minutes || plannedMeal.meals?.prep_time_minutes) + ((plannedMeal.meal?.cook_time_minutes || plannedMeal.meals?.cook_time_minutes) || 0)} min
-                            </p>
+                        <div className="flex items-center gap-3 flex-1">
+                          {canEdit && !isConsumed && (
+                            <Checkbox
+                              checked={isSelected}
+                              onCheckedChange={(checked) => 
+                                handlePlannedMealSelection(plannedMeal.id, checked as boolean)
+                              }
+                              className="bg-background border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                            />
                           )}
+                          <div className="flex-1">
+                            <p className="font-medium">{plannedMeal.meal?.name || plannedMeal.meals?.name}</p>
+                            {(plannedMeal.meal?.prep_time_minutes || plannedMeal.meals?.prep_time_minutes) && (
+                              <p className="text-sm text-muted-foreground flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {(plannedMeal.meal?.prep_time_minutes || plannedMeal.meals?.prep_time_minutes) + ((plannedMeal.meal?.cook_time_minutes || plannedMeal.meals?.cook_time_minutes) || 0)} min
+                              </p>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center gap-2">
                           {isConsumed ? (
@@ -114,32 +161,22 @@ const DayConsumption = ({
                               <CheckCircle className="h-3 w-3" />
                               Consumed
                             </Badge>
-                          ) : (
-                            <>
+                          ) : canEdit ? (
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => onMarkConsumed(
-                                  plannedMeal.meal?.id || plannedMeal.meals?.id || plannedMeal.meal_id, 
+                                  plannedMeal.meal_id,
                                   mealType, 
                                   true, 
                                   plannedMeal.id
                                 )}
                                 className="gap-1"
                               >
-                                <CheckCircle className="h-3 w-3" />
-                                Consumed
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="gap-1 text-muted-foreground"
-                              >
-                                <XCircle className="h-3 w-3" />
-                                Skip
-                              </Button>
-                            </>
-                          )}
+                              <CheckCircle className="h-3 w-3" />
+                              Mark Now
+                            </Button>
+                          ) : null}
                         </div>
                       </div>
                     );
@@ -150,7 +187,7 @@ const DayConsumption = ({
               {/* Additional Consumed Meals */}
               {consumedMeals.filter(c => !c.was_planned).length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Additional:</p>
+                  <p className="text-sm font-medium text-muted-foreground">Additional meals:</p>
                   {consumedMeals
                     .filter(c => !c.was_planned)
                     .map(consumption => (
@@ -164,15 +201,17 @@ const DayConsumption = ({
                             <p className="text-sm text-muted-foreground">{consumption.notes}</p>
                           )}
                         </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => onRemoveConsumption(consumption.id)}
-                          className="gap-1 text-red-600 hover:text-red-700"
-                        >
-                          <XCircle className="h-3 w-3" />
-                          Remove
-                        </Button>
+                        {canEdit && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => onRemoveConsumption(consumption.id)}
+                            className="gap-1 text-red-600 hover:text-red-700"
+                          >
+                            <XCircle className="h-3 w-3" />
+                            Remove
+                          </Button>
+                        )}
                       </div>
                     ))}
                 </div>
@@ -196,7 +235,7 @@ export const MealConsumptionTracker = () => {
   const [selectedMealIds, setSelectedMealIds] = useState<string[]>([]);
 
   const { consumption, addConsumption, removeConsumption, getConsumptionForDate } = useMealConsumption();
-  const { getWeekPlan, activePlan } = useMealPlans();
+  const { activePlan, planMeals } = useMealPlans();
   const { meals } = useMeals();
 
   const handlePreviousDay = () => {
@@ -209,6 +248,22 @@ export const MealConsumptionTracker = () => {
 
   const handleMarkConsumed = async (mealId: string, mealType: string, wasPlanned: boolean, mealPlanMealId?: string) => {
     await addConsumption(mealId, currentDate, mealType, wasPlanned, mealPlanMealId);
+  };
+
+  const handleConfirmDay = async (selectedPlannedMeals: string[]) => {
+    const plannedMealsForDate = getPlannedMealsForDate(currentDate);
+    for (const plannedMealId of selectedPlannedMeals) {
+      const plannedMeal = plannedMealsForDate.find(pm => pm.id === plannedMealId);
+      if (plannedMeal) {
+        await addConsumption(
+          plannedMeal.meal_id,
+          currentDate,
+          plannedMeal.meal_type,
+          true,
+          plannedMeal.id
+        );
+      }
+    }
   };
 
   const handleRemoveConsumption = async (consumptionId: string) => {
@@ -231,13 +286,10 @@ export const MealConsumptionTracker = () => {
     setSelectedMealIds([]);
     setSelectedMealType(null);
   };
-
   const getPlannedMealsForDate = (date: Date) => {
     if (!activePlan) return [];
-    const weekPlan = getWeekPlan();
     const dateStr = format(date, 'yyyy-MM-dd');
-    const dayPlan = weekPlan.find(day => day.date === dateStr);
-    return dayPlan?.meals || [];
+    return planMeals.filter(pm => pm.planned_date === dateStr);
   };
 
   const dayConsumption = getConsumptionForDate(currentDate);
@@ -284,7 +336,9 @@ export const MealConsumptionTracker = () => {
             onMarkConsumed={canEdit ? handleMarkConsumed : () => {}}
             onRemoveConsumption={canEdit ? handleRemoveConsumption : () => {}}
             onAddMeal={canEdit ? handleAddMeal : () => {}}
+            onConfirmDay={canEdit ? handleConfirmDay : () => {}}
             selectedMealType={selectedMealType}
+            canEdit={canEdit}
           />
         </TabsContent>
 
