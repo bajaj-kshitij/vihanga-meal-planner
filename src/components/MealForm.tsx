@@ -268,7 +268,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
           <div className="space-y-2">
             <Label>Cooking Instructions</Label>
             <div className="space-y-2">
-              {instructions.map((instruction, index) => (
+              {instructions.filter(instruction => instruction.trim()).map((instruction, index) => (
                 <div key={index} className="flex items-start gap-2">
                   <span className="text-sm text-muted-foreground min-w-[2rem] mt-2">
                     {index + 1}.
