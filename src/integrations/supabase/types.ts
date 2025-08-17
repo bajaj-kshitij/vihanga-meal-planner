@@ -140,6 +140,45 @@ export type Database = {
         }
         Relationships: []
       }
+      meal_consumption: {
+        Row: {
+          consumed_date: string
+          created_at: string
+          id: string
+          meal_id: string
+          meal_plan_meal_id: string | null
+          meal_type: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+          was_planned: boolean
+        }
+        Insert: {
+          consumed_date: string
+          created_at?: string
+          id?: string
+          meal_id: string
+          meal_plan_meal_id?: string | null
+          meal_type: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+          was_planned?: boolean
+        }
+        Update: {
+          consumed_date?: string
+          created_at?: string
+          id?: string
+          meal_id?: string
+          meal_plan_meal_id?: string | null
+          meal_type?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+          was_planned?: boolean
+        }
+        Relationships: []
+      }
       meal_ingredients: {
         Row: {
           created_at: string

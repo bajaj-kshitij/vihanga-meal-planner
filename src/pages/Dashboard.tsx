@@ -117,7 +117,7 @@ const Dashboard = () => {
             onPlanMeals={() => navigate('/planner')}
             onManageInventory={() => navigate('/inventory')}
             onAddFamily={() => navigate('/profiles')}
-            onLogMeals={() => console.log("Log meals")}
+            onLogMeals={() => navigate('/consumption')}
             onAddMeal={() => navigate('/meals')}
           />
         </section>
