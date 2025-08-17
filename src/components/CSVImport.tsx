@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Upload, X, FileText, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,7 +31,21 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [errors, setErrors] = useState<string[]>([]);
+  const [lastImportErrors, setLastImportErrors] = useState<string[]>([]);
+  const [errorTimestamp, setErrorTimestamp] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Clear last import errors after 2 minutes
+  useEffect(() => {
+    if (errorTimestamp) {
+      const timer = setTimeout(() => {
+        setLastImportErrors([]);
+        setErrorTimestamp(null);
+      }, 2 * 60 * 1000); // 2 minutes
+
+      return () => clearTimeout(timer);
+    }
+  }, [errorTimestamp]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -52,39 +66,46 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
       rowErrors.push(`Row ${index + 1}: Recipe Name is required`);
     }
     
-    if (!row["Ingredients"]?.trim()) {
-      rowErrors.push(`Row ${index + 1}: Ingredients is required`);
+    // Optional field validations - only validate if provided
+    if (row["Meal Type"]?.trim()) {
+      const validMealTypes = [
+        "appetizer", "breakfast", "brunch", "dessert", "dinner", "eggetarian",
+        "high-protein-vegetarian", "indian-breakfast", "lunch", "main-course", 
+        "no-onion-no-garlic", "non-vegetarian", "north-indian-breakfast", 
+        "one-pot-dish", "side-dish", "snack", "south-indian-breakfast", 
+        "sugar-free-diet", "vegan", "vegetarian", "world-breakfast"
+      ];
+      if (!validMealTypes.includes(row["Meal Type"]?.toLowerCase().replace(/\s+/g, '-'))) {
+        rowErrors.push(`Row ${index + 1}: Invalid Meal Type. Valid options are: ${validMealTypes.join(", ")}`);
+      }
     }
     
-    const prepTime = parseInt(row["Prep Time"]);
-    if (isNaN(prepTime) || prepTime < 0) {
-      rowErrors.push(`Row ${index + 1}: Prep Time must be a valid number`);
+    if (row["Difficulty"]?.trim()) {
+      const validDifficulties = ["easy", "medium", "hard"];
+      if (!validDifficulties.includes(row["Difficulty"]?.toLowerCase())) {
+        rowErrors.push(`Row ${index + 1}: Difficulty must be one of: ${validDifficulties.join(", ")}`);
+      }
     }
     
-    const cookTime = parseInt(row["Cook Time"]);
-    if (isNaN(cookTime) || cookTime < 0) {
-      rowErrors.push(`Row ${index + 1}: Cook Time must be a valid number`);
+    if (row["Prep Time"]?.trim()) {
+      const prepTime = parseInt(row["Prep Time"]);
+      if (isNaN(prepTime) || prepTime < 0) {
+        rowErrors.push(`Row ${index + 1}: Prep Time must be a valid number`);
+      }
     }
     
-    const servings = parseInt(row["Serving"]);
-    if (isNaN(servings) || servings < 1) {
-      rowErrors.push(`Row ${index + 1}: Serving must be a valid number greater than 0`);
+    if (row["Cook Time"]?.trim()) {
+      const cookTime = parseInt(row["Cook Time"]);
+      if (isNaN(cookTime) || cookTime < 0) {
+        rowErrors.push(`Row ${index + 1}: Cook Time must be a valid number`);
+      }
     }
     
-    const validMealTypes = [
-      "appetizer", "breakfast", "brunch", "dessert", "dinner", "eggetarian",
-      "high-protein-vegetarian", "indian-breakfast", "lunch", "main-course", 
-      "no-onion-no-garlic", "non-vegetarian", "north-indian-breakfast", 
-      "one-pot-dish", "side-dish", "snack", "south-indian-breakfast", 
-      "sugar-free-diet", "vegan", "vegetarian", "world-breakfast"
-    ];
-    if (!validMealTypes.includes(row["Meal Type"]?.toLowerCase().replace(/\s+/g, '-'))) {
-      rowErrors.push(`Row ${index + 1}: Invalid Meal Type. Valid options are: ${validMealTypes.join(", ")}`);
-    }
-    
-    const validDifficulties = ["easy", "medium", "hard"];
-    if (!validDifficulties.includes(row["Difficulty"]?.toLowerCase())) {
-      rowErrors.push(`Row ${index + 1}: Difficulty must be one of: ${validDifficulties.join(", ")}`);
+    if (row["Serving"]?.trim()) {
+      const servings = parseInt(row["Serving"]);
+      if (isNaN(servings) || servings < 1) {
+        rowErrors.push(`Row ${index + 1}: Serving must be a valid number greater than 0`);
+      }
     }
     
     return rowErrors;
@@ -154,7 +175,10 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
           });
           
           if (allErrors.length > 0) {
-            setErrors(allErrors.slice(0, 10)); // Show first 10 errors
+            const errorsToShow = allErrors.slice(0, 10);
+            setErrors(errorsToShow);
+            setLastImportErrors(errorsToShow);
+            setErrorTimestamp(Date.now());
             setIsProcessing(false);
             return;
           }
@@ -173,15 +197,15 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
                   const mealData: Partial<Meal> = {
                     name: row["Recipe Name"].trim(),
                     description: row["Description"]?.trim() || "",
-                    ingredients: parseIngredients(row["Ingredients"]),
-                    prep_time_minutes: parseInt(row["Prep Time"]),
-                    cook_time_minutes: parseInt(row["Cook Time"]),
+                    ingredients: row["Ingredients"]?.trim() ? parseIngredients(row["Ingredients"]) : [],
+                    prep_time_minutes: row["Prep Time"]?.trim() ? parseInt(row["Prep Time"]) : 0,
+                    cook_time_minutes: row["Cook Time"]?.trim() ? parseInt(row["Cook Time"]) : 0,
                     cuisine_type: row["Cuisine Type"]?.trim() || "Indian",
-                    meal_type: row["Meal Type"].toLowerCase().replace(/\s+/g, '-'),
-                    difficulty_level: row["Difficulty"].toLowerCase() as "easy" | "medium" | "hard",
-                    servings: parseInt(row["Serving"]),
-                    instructions: parseInstructions(row["Cooking Instructions"]),
-                    tags: parseTags(row["Tags"]),
+                    meal_type: row["Meal Type"]?.trim() ? row["Meal Type"].toLowerCase().replace(/\s+/g, '-') : "lunch",
+                    difficulty_level: (row["Difficulty"]?.trim()?.toLowerCase() as "easy" | "medium" | "hard") || "medium",
+                    servings: row["Serving"]?.trim() ? parseInt(row["Serving"]) : 4,
+                    instructions: row["Cooking Instructions"]?.trim() ? parseInstructions(row["Cooking Instructions"]) : [],
+                    tags: row["Tags"]?.trim() ? parseTags(row["Tags"]) : [],
                     is_favorite: false,
                     is_public: false
                   };
@@ -299,17 +323,24 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
               className="hidden"
             />
 
-            {errors.length > 0 && (
+            {(errors.length > 0 || lastImportErrors.length > 0) && (
               <div className="border border-destructive/20 bg-destructive/10 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <AlertCircle className="w-4 h-4 text-destructive" />
-                  <span className="font-medium text-destructive">Validation Errors</span>
+                  <span className="font-medium text-destructive">
+                    {errors.length > 0 ? "Validation Errors" : "Last Import Errors"}
+                  </span>
+                  {lastImportErrors.length > 0 && errors.length === 0 && errorTimestamp && (
+                    <span className="text-xs text-muted-foreground">
+                      (from {new Date(errorTimestamp).toLocaleTimeString()})
+                    </span>
+                  )}
                 </div>
                 <ul className="text-sm text-destructive space-y-1 max-h-32 overflow-y-auto">
-                  {errors.map((error, index) => (
+                  {(errors.length > 0 ? errors : lastImportErrors).map((error, index) => (
                     <li key={index}>• {error}</li>
                   ))}
-                  {errors.length === 10 && (
+                  {(errors.length > 0 ? errors : lastImportErrors).length === 10 && (
                     <li className="font-medium">... and more errors. Fix these first.</li>
                   )}
                 </ul>

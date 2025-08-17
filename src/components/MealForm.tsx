@@ -143,7 +143,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
           {/* Meal Details */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="meal_type">Meal Type *</Label>
+              <Label htmlFor="meal_type">Meal Type</Label>
               <Select
                 value={watch("meal_type")}
                 onValueChange={(value) => setValue("meal_type", value as any)}
