@@ -9,6 +9,7 @@ import { MealPlanPreview } from "@/components/MealPlanPreview";
 import { FamilyMemberCard } from "@/components/FamilyMemberCard";
 import UserMenu from "@/components/UserMenu";
 import { useFamilyMembers } from "@/hooks/useFamilyMembers";
+import { useMealPlans } from "@/hooks/useMealPlans";
 import heroImage from "@/assets/family-kitchen-hero.jpg";
 
 interface LegacyFamilyMember {
@@ -40,40 +41,10 @@ const Dashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { familyMembers } = useFamilyMembers();
+  const { getTodaysMeals, getWeekPlan } = useMealPlans();
 
-  // Move all useState hooks to the top before any early returns
-  const [weekPlan] = useState<DayPlan[]>([
-    {
-      date: new Date().toDateString(),
-      day: "Today",
-      meals: [
-        {
-          id: "1",
-          name: "Overnight Oats with Berries",
-          type: "breakfast",
-          prepTime: 5,
-          servings: 4,
-          cookMethod: "self"
-        },
-        {
-          id: "2",
-          name: "Mediterranean Quinoa Bowl",
-          type: "lunch",
-          prepTime: 25,
-          servings: 4,
-          cookMethod: "cook"
-        },
-        {
-          id: "3",
-          name: "Herb-Crusted Salmon",
-          type: "dinner",
-          prepTime: 35,
-          servings: 4,
-          cookMethod: "cook"
-        }
-      ]
-    }
-  ]);
+  const todaysMeals = getTodaysMeals();
+  const weekPlan = [todaysMeals, ...getWeekPlan().slice(1)];
 
   useEffect(() => {
     if (!loading && !user) {
@@ -135,7 +106,7 @@ const Dashboard = () => {
         <section>
           <h2 className="text-2xl font-semibold text-foreground mb-6">Quick Actions</h2>
           <QuickActions
-            onPlanMeals={() => console.log("Plan meals")}
+            onPlanMeals={() => navigate('/planner')}
             onManageInventory={() => navigate('/inventory')}
             onAddFamily={() => navigate('/profiles')}
             onLogMeals={() => console.log("Log meals")}
@@ -149,7 +120,7 @@ const Dashboard = () => {
           <section>
             <MealPlanPreview 
               weekPlan={weekPlan}
-              onViewFullPlan={() => console.log("View full plan")}
+              onViewFullPlan={() => navigate('/planner')}
             />
           </section>
 

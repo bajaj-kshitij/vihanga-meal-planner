@@ -230,6 +230,90 @@ export type Database = {
           },
         ]
       }
+      meal_plan_meals: {
+        Row: {
+          cook_method: string | null
+          created_at: string
+          id: string
+          meal_id: string
+          meal_plan_id: string
+          meal_type: string
+          notes: string | null
+          planned_date: string
+        }
+        Insert: {
+          cook_method?: string | null
+          created_at?: string
+          id?: string
+          meal_id: string
+          meal_plan_id: string
+          meal_type: string
+          notes?: string | null
+          planned_date: string
+        }
+        Update: {
+          cook_method?: string | null
+          created_at?: string
+          id?: string
+          meal_id?: string
+          meal_plan_id?: string
+          meal_type?: string
+          notes?: string | null
+          planned_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_meal_plan_meals_meal_id"
+            columns: ["meal_id"]
+            isOneToOne: false
+            referencedRelation: "meals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_meal_plan_meals_meal_plan_id"
+            columns: ["meal_plan_id"]
+            isOneToOne: false
+            referencedRelation: "meal_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meal_plans: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          is_active: boolean | null
+          name: string
+          plan_type: string
+          start_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          plan_type: string
+          start_date: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          plan_type?: string
+          start_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       meals: {
         Row: {
           cook_time_minutes: number | null
