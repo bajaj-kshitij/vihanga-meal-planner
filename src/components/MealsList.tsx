@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Search, Filter, ChefHat, Download } from "lucide-react";
+import { Plus, Search, Filter, ChefHat, Upload, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,12 +7,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealCard } from "./MealCard";
 import { MealForm } from "./MealForm";
 import { RecipeImport } from "./RecipeImport";
+import { CSVImport } from "./CSVImport";
 import { Meal, useMeals } from "@/hooks/useMeals";
 
 export const MealsList = () => {
   const { meals, loading, createMeal, updateMeal, deleteMeal } = useMeals();
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [showCSVImport, setShowCSVImport] = useState(false);
   const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterMealType, setFilterMealType] = useState<string>("all");
@@ -66,6 +68,9 @@ export const MealsList = () => {
   const myMeals = filteredMeals.filter(meal => !meal.is_public);
   const publicMeals = filteredMeals.filter(meal => meal.is_public);
   const favoriteMeals = filteredMeals.filter(meal => meal.is_favorite);
+  
+  // Show only user's meals and favorites by default
+  const userMealsAndFavorites = filteredMeals.filter(meal => !meal.is_public || meal.is_favorite);
 
   if (loading) {
     return (
@@ -81,6 +86,12 @@ export const MealsList = () => {
   if (showImport) {
     return (
       <RecipeImport onClose={() => setShowImport(false)} />
+    );
+  }
+
+  if (showCSVImport) {
+    return (
+      <CSVImport onClose={() => setShowCSVImport(false)} />
     );
   }
 
@@ -187,9 +198,13 @@ export const MealsList = () => {
           <p className="text-muted-foreground">Manage your recipes and discover new ones</p>
         </div>
         <div className="flex gap-2">
+          <Button onClick={() => setShowCSVImport(true)} variant="outline" className="gap-2">
+            <Upload className="w-4 h-4" />
+            CSV Import
+          </Button>
           <Button onClick={() => setShowImport(true)} variant="outline" className="gap-2">
             <Download className="w-4 h-4" />
-            Import Recipes
+            Recipe API
           </Button>
           <Button onClick={() => setShowForm(true)} className="gap-2">
             <Plus className="w-4 h-4" />
@@ -237,13 +252,36 @@ export const MealsList = () => {
       </div>
 
       {/* Meals Tabs */}
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+      <Tabs defaultValue="my-favorites" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="my-favorites">My Meals & Liked ({userMealsAndFavorites.length})</TabsTrigger>
           <TabsTrigger value="all">All Meals ({filteredMeals.length})</TabsTrigger>
           <TabsTrigger value="my">My Recipes ({myMeals.length})</TabsTrigger>
           <TabsTrigger value="public">Public ({publicMeals.length})</TabsTrigger>
           <TabsTrigger value="favorites">Favorites ({favoriteMeals.length})</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="my-favorites" className="mt-6">
+          {userMealsAndFavorites.length === 0 ? (
+            <div className="text-center py-12">
+              <ChefHat className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">No meals found</h3>
+              <p className="text-muted-foreground">Start by adding your first meal recipe or like some public recipes!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {userMealsAndFavorites.map((meal) => (
+                <MealCard
+                  key={meal.id}
+                  meal={meal}
+                  onEdit={handleEdit}
+                  onView={handleView}
+                  onToggleFavorite={handleToggleFavorite}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
 
         <TabsContent value="all" className="mt-6">
           {filteredMeals.length === 0 ? (
