@@ -83,7 +83,6 @@ export type Database = {
           created_at: string
           id: string
           name: string
-          nutritional_info: Json | null
           unit: string | null
         }
         Insert: {
@@ -91,7 +90,6 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
-          nutritional_info?: Json | null
           unit?: string | null
         }
         Update: {
@@ -99,7 +97,6 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
-          nutritional_info?: Json | null
           unit?: string | null
         }
         Relationships: []
@@ -247,7 +244,6 @@ export type Database = {
           is_public: boolean | null
           meal_type: string
           name: string
-          nutritional_info: Json | null
           prep_time_minutes: number | null
           servings: number | null
           tags: string[] | null
@@ -267,7 +263,6 @@ export type Database = {
           is_public?: boolean | null
           meal_type: string
           name: string
-          nutritional_info?: Json | null
           prep_time_minutes?: number | null
           servings?: number | null
           tags?: string[] | null
@@ -287,7 +282,6 @@ export type Database = {
           is_public?: boolean | null
           meal_type?: string
           name?: string
-          nutritional_info?: Json | null
           prep_time_minutes?: number | null
           servings?: number | null
           tags?: string[] | null

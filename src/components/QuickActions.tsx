@@ -15,7 +15,6 @@ interface QuickActionsProps {
   onManageInventory: () => void;
   onAddFamily: () => void;
   onLogMeals: () => void;
-  onViewNutrition: () => void;
   onAddMeal: () => void;
 }
 
@@ -24,7 +23,6 @@ export const QuickActions = ({
   onManageInventory,
   onAddFamily,
   onLogMeals,
-  onViewNutrition,
   onAddMeal
 }: QuickActionsProps) => {
   const actions: QuickAction[] = [
@@ -55,13 +53,6 @@ export const QuickActions = ({
       description: "Mark what was consumed",
       variant: "warm",
       onClick: onLogMeals
-    },
-    {
-      icon: <TrendingUp className="w-5 h-5" />,
-      title: "Nutrition Analysis",
-      description: "View health insights",
-      variant: "sage",
-      onClick: onViewNutrition
     },
     {
       icon: <Plus className="w-5 h-5" />,

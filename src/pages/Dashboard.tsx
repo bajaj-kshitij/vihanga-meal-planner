@@ -139,7 +139,6 @@ const Dashboard = () => {
             onManageInventory={() => navigate('/inventory')}
             onAddFamily={() => navigate('/profiles')}
             onLogMeals={() => console.log("Log meals")}
-            onViewNutrition={() => console.log("View nutrition")}
             onAddMeal={() => navigate('/meals')}
           />
         </section>

@@ -54,13 +54,6 @@ export const DashboardStats = () => {
       value: "23",
       change: "Items in stock",
       trend: "up" as const
-    },
-    {
-      icon: <TrendingUp className="w-5 h-5 text-secondary-foreground" />,
-      title: "Nutrition Score",
-      value: "8.5",
-      change: "+0.3 this week",
-      trend: "up" as const
     }
   ];
 

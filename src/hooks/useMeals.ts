@@ -17,7 +17,6 @@ export interface Meal {
   instructions?: string[];
   image_url?: string;
   tags?: string[];
-  nutritional_info?: any;
   is_favorite: boolean;
   is_public: boolean;
   created_at: string;
@@ -29,7 +28,7 @@ export interface Ingredient {
   name: string;
   category: string;
   unit: string;
-  nutritional_info?: any;
+  
   created_at: string;
 }
 
@@ -121,7 +120,7 @@ export const useMeals = () => {
         instructions: processedInstructions.length > 0 ? processedInstructions : mealData.instructions,
         image_url: mealData.image_url,
         tags: mealData.tags,
-        nutritional_info: mealData.nutritional_info,
+        
         is_favorite: mealData.is_favorite || false,
         is_public: mealData.is_public || false,
         user_id: user.id
