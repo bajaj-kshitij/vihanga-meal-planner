@@ -9,7 +9,7 @@ export interface Meal {
   name: string;
   description?: string;
   cuisine_type: string;
-  meal_type: "breakfast" | "lunch" | "dinner" | "snack";
+  meal_type: string;
   prep_time_minutes: number;
   cook_time_minutes: number;
   servings: number;

@@ -225,10 +225,27 @@ export const MealsList = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="appetizer">Appetizer</SelectItem>
             <SelectItem value="breakfast">Breakfast</SelectItem>
-            <SelectItem value="lunch">Lunch</SelectItem>
+            <SelectItem value="brunch">Brunch</SelectItem>
+            <SelectItem value="dessert">Dessert</SelectItem>
             <SelectItem value="dinner">Dinner</SelectItem>
+            <SelectItem value="eggetarian">Eggetarian</SelectItem>
+            <SelectItem value="high-protein-vegetarian">High Protein Vegetarian</SelectItem>
+            <SelectItem value="indian-breakfast">Indian Breakfast</SelectItem>
+            <SelectItem value="lunch">Lunch</SelectItem>
+            <SelectItem value="main-course">Main Course</SelectItem>
+            <SelectItem value="no-onion-no-garlic">No Onion No Garlic (Sattvic)</SelectItem>
+            <SelectItem value="non-vegetarian">Non Vegetarian</SelectItem>
+            <SelectItem value="north-indian-breakfast">North Indian Breakfast</SelectItem>
+            <SelectItem value="one-pot-dish">One Pot Dish</SelectItem>
+            <SelectItem value="side-dish">Side Dish</SelectItem>
             <SelectItem value="snack">Snack</SelectItem>
+            <SelectItem value="south-indian-breakfast">South Indian Breakfast</SelectItem>
+            <SelectItem value="sugar-free-diet">Sugar Free Diet</SelectItem>
+            <SelectItem value="vegan">Vegan</SelectItem>
+            <SelectItem value="vegetarian">Vegetarian</SelectItem>
+            <SelectItem value="world-breakfast">World Breakfast</SelectItem>
           </SelectContent>
         </Select>
 
