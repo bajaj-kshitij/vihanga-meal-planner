@@ -149,12 +149,16 @@ export const useMeals = () => {
     try {
       // Auto-split instructions by periods
       if (updates.instructions) {
-        updates.instructions = updates.instructions.map(instruction => {
-          if (instruction.includes('.') && instruction.split('.').length > 2) {
-            return instruction.split('.').filter(s => s.trim()).map(s => s.trim());
+        const processedInstructions: string[] = [];
+        updates.instructions.forEach(instruction => {
+          if (typeof instruction === 'string' && instruction.includes('.') && instruction.split('.').length > 2) {
+            const splitInstructions = instruction.split('.').filter(s => s.trim()).map(s => s.trim());
+            processedInstructions.push(...splitInstructions);
+          } else {
+            processedInstructions.push(instruction);
           }
-          return instruction;
-        }).flat();
+        });
+        updates.instructions = processedInstructions;
       }
 
       const { data, error } = await supabase
