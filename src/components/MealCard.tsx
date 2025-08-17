@@ -1,4 +1,4 @@
-import { Clock, Users, ChefHat, Heart, Star } from "lucide-react";
+import { Clock, Users, ChefHat, Heart, Star, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,10 @@ interface MealCardProps {
   onEdit?: (meal: Meal) => void;
   onView?: (meal: Meal) => void;
   onToggleFavorite?: (mealId: string) => void;
+  onDelete?: (mealId: string) => void;
 }
 
-export const MealCard = ({ meal, onEdit, onView, onToggleFavorite }: MealCardProps) => {
+export const MealCard = ({ meal, onEdit, onView, onToggleFavorite, onDelete }: MealCardProps) => {
   const getMealTypeColor = (type: Meal["meal_type"]) => {
     switch (type) {
       case "breakfast":
@@ -135,6 +136,16 @@ export const MealCard = ({ meal, onEdit, onView, onToggleFavorite }: MealCardPro
               className="flex-1"
             >
               Edit
+            </Button>
+          )}
+          {onDelete && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onDelete(meal.id)}
+              className="text-destructive hover:text-destructive"
+            >
+              <Trash2 className="w-4 h-4" />
             </Button>
           )}
         </div>

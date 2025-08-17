@@ -54,6 +54,12 @@ export const MealsList = () => {
     }
   };
 
+  const handleDelete = async (mealId: string) => {
+    if (confirm('Are you sure you want to delete this meal?')) {
+      await deleteMeal(mealId);
+    }
+  };
+
   const filteredMeals = meals.filter(meal => {
     const matchesSearch = meal.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          meal.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -277,6 +283,7 @@ export const MealsList = () => {
                   onEdit={handleEdit}
                   onView={handleView}
                   onToggleFavorite={handleToggleFavorite}
+                  onDelete={handleDelete}
                 />
               ))}
             </div>
@@ -299,6 +306,7 @@ export const MealsList = () => {
                   onEdit={handleEdit}
                   onView={handleView}
                   onToggleFavorite={handleToggleFavorite}
+                  onDelete={handleDelete}
                 />
               ))}
             </div>
@@ -314,6 +322,7 @@ export const MealsList = () => {
                 onEdit={handleEdit}
                 onView={handleView}
                 onToggleFavorite={handleToggleFavorite}
+                onDelete={handleDelete}
               />
             ))}
           </div>
@@ -327,6 +336,7 @@ export const MealsList = () => {
                 meal={meal}
                 onView={handleView}
                 onToggleFavorite={handleToggleFavorite}
+                onDelete={handleDelete}
               />
             ))}
           </div>
@@ -341,6 +351,7 @@ export const MealsList = () => {
                 onEdit={handleEdit}
                 onView={handleView}
                 onToggleFavorite={handleToggleFavorite}
+                onDelete={handleDelete}
               />
             ))}
           </div>
