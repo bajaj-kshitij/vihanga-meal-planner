@@ -196,13 +196,14 @@ export const useMealPlans = () => {
     }
   };
 
-  const getTodaysMeals = (): DayPlan => {
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+  const getMealsForDate = (date: Date): DayPlan => {
+    const dateStr = date.toISOString().split('T')[0];
+    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
     
-    const todaysMeals = planMeals
-      .filter(pm => pm.planned_date === todayStr)
+    const mealOrder = { breakfast: 1, lunch: 2, dinner: 3, snack: 4 };
+    
+    const dayMeals = planMeals
+      .filter(pm => pm.planned_date === dateStr)
       .map(pm => ({
         id: pm.id,
         name: pm.meal?.name || 'Unknown Meal',
@@ -210,13 +211,25 @@ export const useMealPlans = () => {
         prepTime: pm.meal?.prep_time_minutes || 0,
         servings: pm.meal?.servings || 1,
         cookMethod: pm.cook_method
-      }));
+      }))
+      .sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
 
     return {
-      date: today.toDateString(),
+      date: date.toDateString(),
       day: dayName,
-      meals: todaysMeals
+      meals: dayMeals
     };
+  };
+
+  const getTodaysMeals = (): DayPlan => {
+    const today = new Date();
+    return getMealsForDate(today);
+  };
+
+  const getTomorrowsMeals = (): DayPlan => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return getMealsForDate(tomorrow);
   };
 
   const getWeekPlan = (): DayPlan[] => {
@@ -225,6 +238,7 @@ export const useMealPlans = () => {
     weekStart.setDate(today.getDate() - today.getDay());
 
     const weekPlan: DayPlan[] = [];
+    const mealOrder = { breakfast: 1, lunch: 2, dinner: 3, snack: 4 };
     
     for (let i = 0; i < 7; i++) {
       const date = new Date(weekStart);
@@ -241,7 +255,8 @@ export const useMealPlans = () => {
           prepTime: pm.meal?.prep_time_minutes || 0,
           servings: pm.meal?.servings || 1,
           cookMethod: pm.cook_method
-        }));
+        }))
+        .sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
 
       weekPlan.push({
         date: date.toDateString(),
@@ -275,6 +290,7 @@ export const useMealPlans = () => {
     addMealToPlan,
     removeMealFromPlan,
     getTodaysMeals,
+    getTomorrowsMeals,
     getWeekPlan,
     setActivePlan
   };

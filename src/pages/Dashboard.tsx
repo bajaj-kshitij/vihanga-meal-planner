@@ -42,10 +42,10 @@ const Dashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { familyMembers } = useFamilyMembers();
-  const { getTodaysMeals, getWeekPlan } = useMealPlans();
+  const { getTodaysMeals, getTomorrowsMeals, getWeekPlan } = useMealPlans();
 
   const todaysMeals = getTodaysMeals();
-  const weekPlan = [todaysMeals, ...getWeekPlan().slice(1)];
+  const tomorrowsMeals = getTomorrowsMeals();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -103,10 +103,11 @@ const Dashboard = () => {
         {/* Stats */}
         <DashboardStats />
 
-        {/* Today's Plan */}
+        {/* Plan */}
         <section>
           <MealPlanPreview 
-            weekPlan={weekPlan}
+            todayPlan={todaysMeals}
+            tomorrowPlan={tomorrowsMeals}
             onViewFullPlan={() => navigate('/planner')}
           />
         </section>
