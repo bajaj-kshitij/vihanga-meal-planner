@@ -10,6 +10,7 @@ import { useMealPlans } from "@/hooks/useMealPlans";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { PageLayout } from "@/components/ui/page-layout";
 
 const MealPlanner = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -37,9 +38,10 @@ const MealPlanner = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-gentle">
-      <div className="container mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-8">
+    <PageLayout>
+      <div className="min-h-screen bg-gradient-gentle">
+        <div className="container mx-auto px-4 md:px-6 py-4 md:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Meal Planner</h1>
             <p className="text-muted-foreground mt-2">
@@ -47,7 +49,7 @@ const MealPlanner = () => {
             </p>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
             {mealPlans.length > 0 && (
               <div className="flex items-center gap-2">
                 <Settings className="h-4 w-4 text-muted-foreground" />
@@ -107,8 +109,9 @@ const MealPlanner = () => {
         ) : (
           <MealPlanCalendar />
         )}
+        </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

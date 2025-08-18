@@ -64,11 +64,11 @@ export const QuickActions = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {actions.map((action, index) => (
         <Card
           key={index}
-          className="p-4 bg-card hover:shadow-warm transition-all duration-300 cursor-pointer animate-slide-up border-border"
+          className="p-3 md:p-4 bg-card hover:shadow-warm transition-all duration-300 cursor-pointer animate-slide-up border-border"
           style={{ animationDelay: `${index * 100}ms` }}
           onClick={action.onClick}
         >
@@ -76,13 +76,13 @@ export const QuickActions = ({
             <Button
               variant={action.variant}
               size="icon"
-              className="shrink-0"
+              className="shrink-0 h-8 w-8 md:h-10 md:w-10"
             >
               {action.icon}
             </Button>
-            <div className="flex-1">
-              <h3 className="font-semibold text-foreground mb-1">{action.title}</h3>
-              <p className="text-sm text-muted-foreground">{action.description}</p>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-foreground mb-1 text-sm md:text-base truncate">{action.title}</h3>
+              <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">{action.description}</p>
             </div>
           </div>
         </Card>

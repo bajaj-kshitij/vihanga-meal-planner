@@ -190,19 +190,19 @@ export const MealsList = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Meal Catalogue</h1>
-          <p className="text-muted-foreground">Manage your recipes and discover new ones</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Meal Catalogue</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Manage your recipes and discover new ones</p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setShowCSVImport(true)} variant="outline" className="gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button onClick={() => setShowCSVImport(true)} variant="outline" className="gap-2 w-full sm:w-auto">
             <Upload className="w-4 h-4" />
-            CSV Import
+            <span className="sm:inline">CSV Import</span>
           </Button>
-          <Button onClick={() => setShowForm(true)} className="gap-2">
+          <Button onClick={() => setShowForm(true)} className="gap-2 w-full sm:w-auto">
             <Plus className="w-4 h-4" />
-            Add Meal
+            <span className="sm:inline">Add Meal</span>
           </Button>
         </div>
       </div>
@@ -264,9 +264,15 @@ export const MealsList = () => {
 
       {/* Meals Tabs */}
       <Tabs defaultValue="favorites" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="favorites">Favorites ({favoriteMeals.length})</TabsTrigger>
-          <TabsTrigger value="all">All Meals ({filteredMeals.length})</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="favorites" className="text-xs sm:text-sm">
+            <span className="hidden sm:inline">Favorites</span>
+            <span className="sm:hidden">♥</span>
+            <span className="ml-1">({favoriteMeals.length})</span>
+          </TabsTrigger>
+          <TabsTrigger value="all" className="text-xs sm:text-sm">
+            All <span className="hidden sm:inline">Meals</span> ({filteredMeals.length})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="favorites" className="mt-6">

@@ -19,21 +19,25 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/profiles" element={<Profiles />} />
-            <Route path="/meals" element={<Meals />} />
-            <Route path="/inventory" element={<Inventory />} />
-            <Route path="/planner" element={<MealPlanner />} />
-            <Route path="/consumption" element={<Consumption />} />
-            <Route path="/auth" element={<Auth />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <div className="min-h-screen w-full bg-background">
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <div className="flex flex-col min-h-screen">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/profiles" element={<Profiles />} />
+                <Route path="/meals" element={<Meals />} />
+                <Route path="/inventory" element={<Inventory />} />
+                <Route path="/planner" element={<MealPlanner />} />
+                <Route path="/consumption" element={<Consumption />} />
+                <Route path="/auth" element={<Auth />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+          </BrowserRouter>
+        </div>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
