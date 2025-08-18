@@ -130,10 +130,6 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
         {weekDays.map((day) => {
           const dayMeals = getMealsForDay(day);
           
-          if (mealTypeFilter !== "all" && dayMeals.length === 0) {
-            return null;
-          }
-
           return (
             <Card key={day.toISOString()}>
               <CardHeader className="pb-4">
@@ -211,47 +207,76 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
                               })}
                             </div>
                           ) : (
-                            <p className="text-sm text-muted-foreground italic">No {mealType} planned</p>
+                            <div 
+                              className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center cursor-pointer hover:border-muted-foreground/40 transition-colors"
+                              onClick={() => handleAddMeal(day, mealType)}
+                            >
+                              <ChefHat className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                              <p className="text-sm text-muted-foreground mb-1">No {mealType} planned</p>
+                              <p className="text-xs text-muted-foreground/60">Click to add a meal</p>
+                            </div>
                           )}
                         </div>
                       );
                     })}
+                    
+                    {/* Show overall empty state if no meals planned for the entire day */}
+                    {dayMeals.length === 0 && (
+                      <div className="text-center py-8">
+                        <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground/40" />
+                        <p className="text-muted-foreground mb-2">No meals planned for this day</p>
+                        <p className="text-sm text-muted-foreground/60">Start planning by adding your first meal</p>
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {dayMeals.map((planMeal) => {
-                      const meal = meals.find(m => m.id === planMeal.meal_id);
-                      return (
-                        <div
-                          key={planMeal.id}
-                          className="bg-card border border-border rounded-lg p-3 group hover:shadow-md transition-all cursor-pointer"
-                          onClick={() => handleMealClick(meal)}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm truncate">{meal?.name || 'Unknown Meal'}</p>
-                              {meal?.description && (
-                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                                  {meal.description}
-                                </p>
-                              )}
-                            </div>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0 ml-2"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRemoveMeal(planMeal.id);
-                              }}
+                  <>
+                    {dayMeals.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {dayMeals.map((planMeal) => {
+                          const meal = meals.find(m => m.id === planMeal.meal_id);
+                          return (
+                            <div
+                              key={planMeal.id}
+                              className="bg-card border border-border rounded-lg p-3 group hover:shadow-md transition-all cursor-pointer"
+                              onClick={() => handleMealClick(meal)}
                             >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-sm truncate">{meal?.name || 'Unknown Meal'}</p>
+                                  {meal?.description && (
+                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                      {meal.description}
+                                    </p>
+                                  )}
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="opacity-0 group-hover:opacity-100 h-6 w-6 p-0 ml-2"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveMeal(planMeal.id);
+                                  }}
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div 
+                        className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-8 text-center cursor-pointer hover:border-muted-foreground/40 transition-colors"
+                        onClick={() => handleAddMeal(day, mealTypeFilter)}
+                      >
+                        <ChefHat className="h-12 w-12 mx-auto mb-4 text-muted-foreground/40" />
+                        <p className="text-muted-foreground mb-2">No {mealTypeFilter} planned for this day</p>
+                        <p className="text-sm text-muted-foreground/60">Click to add a {mealTypeFilter} meal</p>
+                      </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
