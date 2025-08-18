@@ -2,6 +2,7 @@ import { TrendingUp, Calendar, Package } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useMealPlans } from "@/hooks/useMealPlans";
 import { useInventory } from "@/hooks/useInventory";
+import { useNavigate } from "react-router-dom";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -9,13 +10,19 @@ interface StatCardProps {
   value: string;
   change: string;
   trend: "up" | "down" | "neutral";
+  onClick?: () => void;
 }
 
-const StatCard = ({ icon, title, value, change, trend }: StatCardProps) => {
+const StatCard = ({ icon, title, value, change, trend, onClick }: StatCardProps) => {
   const trendColor = trend === "up" ? "text-primary" : trend === "down" ? "text-destructive" : "text-muted-foreground";
   
   return (
-    <Card className="p-6 bg-gradient-gentle border-border hover:shadow-soft transition-all duration-300">
+    <Card 
+      className={`p-6 bg-gradient-gentle border-border hover:shadow-soft transition-all duration-300 ${
+        onClick ? "cursor-pointer hover:scale-105" : ""
+      }`}
+      onClick={onClick}
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gradient-warm rounded-lg">
@@ -37,6 +44,7 @@ const StatCard = ({ icon, title, value, change, trend }: StatCardProps) => {
 export const DashboardStats = () => {
   const { getWeekPlan } = useMealPlans();
   const { getLowStockItems } = useInventory();
+  const navigate = useNavigate();
   
   const weekPlan = getWeekPlan();
   const totalMealsPlanned = weekPlan.reduce((total, day) => total + day.meals.length, 0);
@@ -50,14 +58,25 @@ export const DashboardStats = () => {
       title: "Meals Planned",
       value: totalMealsPlanned.toString(),
       change: "Next 7 Days",
-      trend: "neutral" as const
+      trend: "neutral" as const,
+      onClick: () => navigate('/planner')
     },
     {
       icon: <Package className="w-5 h-5 text-secondary-foreground" />,
       title: "Low Inventory",
       value: lowStockItems.length.toString(),
       change: "Items below threshold",
-      trend: lowStockTrend
+      trend: lowStockTrend,
+      onClick: () => {
+        navigate('/inventory');
+        // Set a timeout to ensure the page loads before applying the filter
+        setTimeout(() => {
+          const lowStockTab = document.querySelector('[value="low-stock"]') as HTMLElement;
+          if (lowStockTab) {
+            lowStockTab.click();
+          }
+        }, 100);
+      }
     }
   ];
 
