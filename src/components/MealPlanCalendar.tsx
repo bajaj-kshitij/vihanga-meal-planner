@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, Users, ChefHat, Plus, X } from "lucide-react";
 import { format, startOfWeek, addDays } from "date-fns";
 import { useMealPlans } from "@/hooks/useMealPlans";
-import { useMeals } from "@/hooks/useMeals";
+import { useMeals, type MealIngredient } from "@/hooks/useMeals";
 import { MealSelector } from "./MealSelector";
 import { MealCard } from "./MealCard";
 
@@ -24,9 +24,10 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
   const [selectedMeal, setSelectedMeal] = useState<any>(null);
   const [showMealDetails, setShowMealDetails] = useState(false);
   const [mealTypeFilter, setMealTypeFilter] = useState("all");
+  const [mealIngredients, setMealIngredients] = useState<MealIngredient[]>([]);
 
   const { activePlan, planMeals, addMealToPlan, removeMealFromPlan } = useMealPlans();
-  const { meals } = useMeals();
+  const { meals, getMealIngredients } = useMeals();
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeek, i));
 
@@ -72,9 +73,18 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
     await removeMealFromPlan(planMealId);
   };
 
-  const handleMealClick = (meal: any) => {
+  const handleMealClick = async (meal: any) => {
     setSelectedMeal(meal);
     setShowMealDetails(true);
+    
+    // Load ingredients for the selected meal
+    try {
+      const ingredients = await getMealIngredients(meal.id);
+      setMealIngredients(ingredients);
+    } catch (error) {
+      console.error("Error loading meal ingredients:", error);
+      setMealIngredients([]);
+    }
   };
 
   const mealTypeOrder = ['breakfast', 'lunch', 'dinner', 'snack'];
@@ -304,17 +314,73 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
 
       {/* Meal Details Dialog */}
       <Dialog open={showMealDetails} onOpenChange={setShowMealDetails}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{selectedMeal?.name}</DialogTitle>
           </DialogHeader>
           
           {selectedMeal && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <MealCard 
                 meal={selectedMeal}
                 onView={() => setShowMealDetails(false)}
               />
+              
+              {/* Ingredients Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-foreground">Ingredients</h3>
+                
+                {/* Simple ingredients list (from text field) */}
+                {selectedMeal.ingredients && selectedMeal.ingredients.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-muted-foreground">Recipe Ingredients</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {selectedMeal.ingredients.map((ingredient: string, index: number) => (
+                        <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                          <div className="w-2 h-2 bg-primary rounded-full"></div>
+                          <span className="text-sm">{ingredient}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Structured ingredients (from meal_ingredients table) */}
+                {mealIngredients.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium text-muted-foreground">Detailed Ingredients</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {mealIngredients.map((mealIngredient) => (
+                        <div key={mealIngredient.id} className="p-3 border border-border rounded-lg bg-card">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium">{mealIngredient.ingredient?.name}</span>
+                            <Badge variant="secondary" className="text-xs">
+                              {mealIngredient.ingredient?.category}
+                            </Badge>
+                          </div>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {mealIngredient.quantity} {mealIngredient.unit}
+                          </div>
+                          {mealIngredient.notes && (
+                            <div className="text-xs text-muted-foreground mt-1 italic">
+                              {mealIngredient.notes}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Show message if no ingredients are available */}
+                {(!selectedMeal.ingredients || selectedMeal.ingredients.length === 0) && 
+                 mealIngredients.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <ChefHat className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No ingredients listed for this recipe yet.</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </DialogContent>
