@@ -94,12 +94,6 @@ export const InventoryCard = ({
             </div>
           </div>
 
-          {/* Stock Status */}
-          {isLowStock && (
-            <Badge variant="destructive" className="w-full justify-center">
-              {item.current_stock === 0 ? "Out of Stock" : "Low Stock"}
-            </Badge>
-          )}
 
           {/* Stock Management */}
           <div className="space-y-3">

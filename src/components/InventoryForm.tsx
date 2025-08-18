@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AlertTriangle, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,12 +61,29 @@ export const InventoryForm = ({ item, onSubmit, onCancel, loading }: InventoryFo
     }));
   };
 
+  const isLowStock = item && formData.current_stock <= formData.minimum_stock;
+
+  const getStockIcon = () => {
+    if (!item) return null;
+    if (formData.current_stock === 0 || isLowStock) {
+      return <AlertTriangle className="w-4 h-4 text-red-500" />;
+    }
+    return <Package className="w-4 h-4 text-green-500" />;
+  };
+
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>
-          {item ? "Edit Inventory Item" : "Add New Inventory Item"}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>
+            {item ? "Edit Inventory Item" : "Add New Inventory Item"}
+          </CardTitle>
+          {item && (
+            <div className="flex items-center gap-1">
+              {getStockIcon()}
+            </div>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
