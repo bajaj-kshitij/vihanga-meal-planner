@@ -133,22 +133,9 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
           return (
             <Card key={day.toISOString()}>
               <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-semibold">
-                    {format(day, "EEEE, MMMM d")}
-                  </CardTitle>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      const defaultMealType = mealTypeFilter === "all" ? "breakfast" : mealTypeFilter;
-                      handleAddMeal(day, defaultMealType);
-                    }}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Meal
-                  </Button>
-                </div>
+                <CardTitle className="text-lg font-semibold">
+                  {format(day, "EEEE, MMMM d")}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 {mealTypeFilter === "all" ? (

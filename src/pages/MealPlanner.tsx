@@ -55,9 +55,13 @@ const MealPlanner = () => {
                 <Settings className="h-4 w-4 text-muted-foreground" />
                 <Select
                   value={activePlan?.id || ""}
-                  onValueChange={(planId) => {
-                    const plan = mealPlans.find(p => p.id === planId);
-                    setActivePlan(plan || null);
+                  onValueChange={(value) => {
+                    if (value === "create-new") {
+                      setShowCreateForm(true);
+                    } else {
+                      const plan = mealPlans.find(p => p.id === value);
+                      setActivePlan(plan || null);
+                    }
                   }}
                 >
                   <SelectTrigger className="w-48">
@@ -69,18 +73,35 @@ const MealPlanner = () => {
                         {plan.name} ({plan.plan_type})
                       </SelectItem>
                     ))}
+                    <SelectItem value="create-new">
+                      <div className="flex items-center">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Plan
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             )}
             
+            {mealPlans.length === 0 && (
+              <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Plan
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create New Meal Plan</DialogTitle>
+                  </DialogHeader>
+                  <MealPlanForm onClose={() => setShowCreateForm(false)} />
+                </DialogContent>
+              </Dialog>
+            )}
+            
             <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Plan
-                </Button>
-              </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Create New Meal Plan</DialogTitle>
