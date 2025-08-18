@@ -25,6 +25,7 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
   const [showMealDetails, setShowMealDetails] = useState(false);
   const [mealTypeFilter, setMealTypeFilter] = useState("all");
   const [mealIngredients, setMealIngredients] = useState<MealIngredient[]>([]);
+  const [showRecipeDetails, setShowRecipeDetails] = useState(false);
 
   const { activePlan, planMeals, addMealToPlan, removeMealFromPlan } = useMealPlans();
   const { meals, getMealIngredients } = useMeals();
@@ -76,6 +77,11 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
   const handleMealClick = async (meal: any) => {
     setSelectedMeal(meal);
     setShowMealDetails(true);
+  };
+
+  const handleViewRecipe = async (meal: any) => {
+    setSelectedMeal(meal);
+    setShowRecipeDetails(true);
     
     // Load ingredients for the selected meal
     try {
@@ -323,9 +329,90 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
             <div className="space-y-6">
               <MealCard 
                 meal={selectedMeal}
-                onView={() => setShowMealDetails(false)}
+                onView={(meal) => {
+                  setShowMealDetails(false);
+                  handleViewRecipe(meal);
+                }}
               />
-              
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Recipe Details Dialog */}
+      <Dialog open={showRecipeDetails} onOpenChange={setShowRecipeDetails}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{selectedMeal?.name} - Recipe Details</DialogTitle>
+          </DialogHeader>
+          
+          {selectedMeal && (
+            <div className="space-y-6">
+              {/* Recipe Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Recipe Info</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Prep Time:</span>
+                        <span>{selectedMeal.prep_time_minutes} minutes</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Cook Time:</span>
+                        <span>{selectedMeal.cook_time_minutes} minutes</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Total Time:</span>
+                        <span>{selectedMeal.prep_time_minutes + selectedMeal.cook_time_minutes} minutes</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Servings:</span>
+                        <span>{selectedMeal.servings}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Difficulty:</span>
+                        <Badge className="capitalize">{selectedMeal.difficulty_level}</Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {selectedMeal.description && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Description</h3>
+                      <p className="text-sm text-muted-foreground">{selectedMeal.description}</p>
+                    </div>
+                  )}
+
+                  {selectedMeal.tags && selectedMeal.tags.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Tags</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedMeal.tags.map((tag: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-4">
+                  {/* Instructions */}
+                  {selectedMeal.instructions && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Instructions</h3>
+                      <div className="prose prose-sm max-w-none">
+                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                          {selectedMeal.instructions}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Ingredients Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-foreground">Ingredients</h3>
