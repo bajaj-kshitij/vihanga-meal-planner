@@ -60,7 +60,26 @@ export const useMeals = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setMeals((data || []) as Meal[]);
+      
+      // Process existing meals to split comma-separated ingredients
+      const processedMeals = (data || []).map(meal => {
+        if (meal.ingredients && meal.ingredients.length > 0) {
+          const processedIngredients: string[] = [];
+          meal.ingredients.forEach((ingredient: string, index: number) => {
+            // Only split the first ingredient if it contains commas
+            if (index === 0 && ingredient.includes(',')) {
+              const splitIngredients = ingredient.split(',').map(ing => ing.trim()).filter(ing => ing);
+              processedIngredients.push(...splitIngredients);
+            } else {
+              processedIngredients.push(ingredient);
+            }
+          });
+          return { ...meal, ingredients: processedIngredients };
+        }
+        return meal;
+      });
+      
+      setMeals(processedMeals as Meal[]);
     } catch (error) {
       console.error("Error fetching meals:", error);
       toast.error("Failed to load meals");
@@ -94,6 +113,15 @@ export const useMeals = () => {
         return instruction;
       }).flat() || [];
 
+      // Auto-split comma-separated ingredients
+      const processedIngredients = mealData.ingredients?.map((ingredient, index) => {
+        // Only split the first ingredient if it contains commas
+        if (index === 0 && ingredient.includes(',')) {
+          return ingredient.split(',').map(ing => ing.trim()).filter(ing => ing);
+        }
+        return ingredient;
+      }).flat() || [];
+
       const insertData = {
         name: mealData.name || "",
         description: mealData.description,
@@ -104,7 +132,7 @@ export const useMeals = () => {
         servings: mealData.servings || 4,
         difficulty_level: mealData.difficulty_level || "medium",
         instructions: processedInstructions.length > 0 ? processedInstructions : mealData.instructions,
-        ingredients: mealData.ingredients,
+        ingredients: processedIngredients.length > 0 ? processedIngredients : mealData.ingredients,
         image_url: mealData.image_url,
         tags: mealData.tags,
         is_favorite: mealData.is_favorite || false,
@@ -144,6 +172,21 @@ export const useMeals = () => {
           }
         });
         updates.instructions = processedInstructions;
+      }
+
+      // Auto-split comma-separated ingredients
+      if (updates.ingredients) {
+        const processedIngredients: string[] = [];
+        updates.ingredients.forEach((ingredient, index) => {
+          // Only split the first ingredient if it contains commas
+          if (index === 0 && ingredient.includes(',')) {
+            const splitIngredients = ingredient.split(',').map(ing => ing.trim()).filter(ing => ing);
+            processedIngredients.push(...splitIngredients);
+          } else {
+            processedIngredients.push(ingredient);
+          }
+        });
+        updates.ingredients = processedIngredients;
       }
 
       const { data, error } = await supabase
