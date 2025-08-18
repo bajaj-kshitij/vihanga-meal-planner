@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Search, Filter, ChefHat, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { MealCard } from "./MealCard";
 import { MealForm } from "./MealForm";
 import { CSVImport } from "./CSVImport";
-import { Meal, useMeals } from "@/hooks/useMeals";
+import { Meal, useMeals, type MealIngredient } from "@/hooks/useMeals";
 
 export const MealsList = () => {
-  const { meals, loading, createMeal, updateMeal, deleteMeal } = useMeals();
+  const { meals, loading, createMeal, updateMeal, deleteMeal, getMealIngredients } = useMeals();
   const [showForm, setShowForm] = useState(false);
   const [showCSVImport, setShowCSVImport] = useState(false);
   const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
@@ -18,6 +19,7 @@ export const MealsList = () => {
   const [filterMealType, setFilterMealType] = useState<string>("all");
   const [filterDifficulty, setFilterDifficulty] = useState<string>("all");
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
+  const [mealIngredients, setMealIngredients] = useState<MealIngredient[]>([]);
 
   const handleCreateMeal = async (mealData: Partial<Meal>) => {
     const result = await createMeal(mealData);
@@ -41,8 +43,17 @@ export const MealsList = () => {
     setShowForm(true);
   };
 
-  const handleView = (meal: Meal) => {
+  const handleView = async (meal: Meal) => {
     setSelectedMeal(meal);
+    
+    // Load ingredients for the selected meal
+    try {
+      const ingredients = await getMealIngredients(meal.id);
+      setMealIngredients(ingredients);
+    } catch (error) {
+      console.error("Error loading meal ingredients:", error);
+      setMealIngredients([]);
+    }
   };
 
   const handleToggleFavorite = async (mealId: string) => {
@@ -169,6 +180,62 @@ export const MealsList = () => {
               </ol>
             </div>
           )}
+
+          {/* Ingredients Section */}
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold mb-3">Ingredients</h3>
+            
+            {/* Simple ingredients list (from text field) */}
+            {selectedMeal.ingredients && selectedMeal.ingredients.length > 0 && (
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-muted-foreground mb-3">Recipe Ingredients</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {selectedMeal.ingredients.map((ingredient: string, index: number) => (
+                    <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      <span className="text-sm">{ingredient}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Structured ingredients (from meal_ingredients table) */}
+            {mealIngredients.length > 0 && (
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-muted-foreground mb-3">Detailed Ingredients</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {mealIngredients.map((mealIngredient) => (
+                    <div key={mealIngredient.id} className="p-3 border border-border rounded-lg bg-card">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">{mealIngredient.ingredient?.name}</span>
+                        <Badge variant="secondary" className="text-xs">
+                          {mealIngredient.ingredient?.category}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {mealIngredient.quantity} {mealIngredient.unit}
+                      </div>
+                      {mealIngredient.notes && (
+                        <div className="text-xs text-muted-foreground mt-1 italic">
+                          {mealIngredient.notes}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Show message if no ingredients are available */}
+            {(!selectedMeal.ingredients || selectedMeal.ingredients.length === 0) && 
+             mealIngredients.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <ChefHat className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No ingredients listed for this recipe yet.</p>
+              </div>
+            )}
+          </div>
 
           {selectedMeal.tags && selectedMeal.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
