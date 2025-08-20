@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { parseIngredientsArray, type ParsedIngredient } from "@/utils/ingredientParser";
 
 export interface Meal {
   id: string;
@@ -16,6 +17,7 @@ export interface Meal {
   difficulty_level: "easy" | "medium" | "hard";
   instructions?: string[];
   ingredients?: string[];
+  parsed_ingredients?: ParsedIngredient[];
   image_url?: string;
   tags?: string[];
   is_favorite: boolean;
@@ -62,7 +64,7 @@ export const useMeals = () => {
 
       if (error) throw error;
       
-      // Process existing meals to split comma-separated ingredients
+      // Process existing meals to split comma-separated ingredients and parse them
       const processedMeals = (data || []).map(meal => {
         if (meal.ingredients && meal.ingredients.length > 0) {
           const processedIngredients: string[] = [];
@@ -75,7 +77,15 @@ export const useMeals = () => {
               processedIngredients.push(ingredient);
             }
           });
-          return { ...meal, ingredients: processedIngredients };
+          
+          // Parse ingredients to extract structured data
+          const parsedIngredients = parseIngredientsArray(processedIngredients);
+          
+          return { 
+            ...meal, 
+            ingredients: processedIngredients,
+            parsed_ingredients: parsedIngredients
+          };
         }
         return meal;
       });
@@ -123,6 +133,8 @@ export const useMeals = () => {
         return ingredient;
       }).flat() || [];
 
+      const finalIngredients = processedIngredients.length > 0 ? processedIngredients : mealData.ingredients || [];
+      
       const insertData = {
         name: mealData.name || "",
         description: mealData.description,
@@ -133,7 +145,7 @@ export const useMeals = () => {
         servings: mealData.servings || 4,
         difficulty_level: mealData.difficulty_level || "medium",
         instructions: processedInstructions.length > 0 ? processedInstructions : mealData.instructions,
-        ingredients: processedIngredients.length > 0 ? processedIngredients : mealData.ingredients,
+        ingredients: finalIngredients,
         image_url: mealData.image_url,
         tags: mealData.tags,
         is_favorite: mealData.is_favorite || false,
@@ -149,7 +161,13 @@ export const useMeals = () => {
 
       if (error) throw error;
       
-      setMeals(prev => [data as Meal, ...prev]);
+      // Parse ingredients for the created meal
+      const mealWithParsed = {
+        ...data,
+        parsed_ingredients: parseIngredientsArray(data.ingredients || [])
+      } as Meal;
+      
+      setMeals(prev => [mealWithParsed, ...prev]);
       toast.success("Meal created successfully");
       return data;
     } catch (error) {
@@ -199,11 +217,18 @@ export const useMeals = () => {
 
       if (error) throw error;
 
+      const updatedMeal = data ?? { id, ...updates };
+      const parsedIngredients = updatedMeal.ingredients ? parseIngredientsArray(updatedMeal.ingredients) : undefined;
+      
       setMeals(prev => prev.map(meal => 
-        meal.id === id ? { ...meal, ...(data ?? updates) } as Meal : meal
+        meal.id === id ? { 
+          ...meal, 
+          ...(updatedMeal), 
+          parsed_ingredients: parsedIngredients || meal.parsed_ingredients 
+        } as Meal : meal
       ));
       toast.success("Meal updated successfully");
-      return data ?? { id, ...updates } as Partial<Meal>;
+      return updatedMeal as Partial<Meal>;
     } catch (error) {
       console.error("Error updating meal:", error);
       toast.error("Failed to update meal");

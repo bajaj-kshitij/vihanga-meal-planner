@@ -1,6 +1,7 @@
 import { Clock, Users, ChefHat, Heart, Star, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ParsedIngredientsList } from "@/components/ParsedIngredientsList";
 import { Button } from "@/components/ui/button";
 import { Meal } from "@/hooks/useMeals";
 
@@ -97,6 +98,30 @@ export const MealCard = ({ meal, onEdit, onView, onToggleFavorite, onDelete }: M
             </span>
           </div>
         </div>
+
+        {meal.parsed_ingredients && meal.parsed_ingredients.length > 0 && (
+          <div className="mb-4">
+            <h4 className="text-sm font-medium mb-2">Ingredients:</h4>
+            <div className="space-y-1 max-h-32 overflow-y-auto">
+              {meal.parsed_ingredients.slice(0, 5).map((ingredient, index) => (
+                <div key={index} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="w-4 text-center">{index + 1}.</span>
+                  <span className="flex-1">{ingredient.name}</span>
+                  {ingredient.quantity && ingredient.unit && (
+                    <span className="text-xs bg-muted px-1 rounded">
+                      {ingredient.quantity} {ingredient.unit}
+                    </span>
+                  )}
+                </div>
+              ))}
+              {meal.parsed_ingredients.length > 5 && (
+                <div className="text-xs text-muted-foreground text-center pt-1">
+                  +{meal.parsed_ingredients.length - 5} more ingredients...
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {meal.tags && meal.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">

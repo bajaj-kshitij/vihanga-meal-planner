@@ -10,6 +10,8 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { X, Plus } from "lucide-react";
 import { Meal, useMeals } from "@/hooks/useMeals";
+import { toast } from "sonner";
+import { ParsedIngredientsList } from "@/components/ParsedIngredientsList";
 
 interface MealFormProps {
   meal?: Meal;
@@ -17,7 +19,6 @@ interface MealFormProps {
   onCancel: () => void;
   loading?: boolean;
 }
-
 
 interface FormData {
   name: string;
@@ -99,7 +100,6 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
     };
     onSubmit(mealData);
   };
-
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -259,92 +259,103 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
             </div>
           </div>
 
-          {/* Ingredients */}
-          <div className="space-y-2">
-            <Label>Ingredients</Label>
-            <div className="space-y-2">
-              {ingredients.map((ingredient, index) => (
-                <div key={index} className="flex items-start gap-2">
-                  <span className="text-sm text-muted-foreground min-w-[2rem] mt-2">
-                    {index + 1}.
-                  </span>
-                  <div className="flex-1 text-sm border rounded-md p-2 bg-muted/30">
-                    {ingredient}
+          {/* Ingredients and Instructions Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column - Ingredients */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Ingredients</Label>
+                <div className="space-y-2">
+                  {ingredients.map((ingredient, index) => (
+                    <div key={index} className="flex items-start gap-2">
+                      <span className="text-sm text-muted-foreground min-w-[2rem] mt-2">
+                        {index + 1}.
+                      </span>
+                      <div className="flex-1 text-sm border rounded-md p-2 bg-muted/30">
+                        {ingredient}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeIngredient(index)}
+                        className="shrink-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <div className="flex gap-2">
+                    <Input
+                      value={newIngredient}
+                      onChange={(e) => setNewIngredient(e.target.value)}
+                      placeholder="Add ingredient (e.g., 2 cups rice, 1 tbsp oil)..."
+                      className="flex-1"
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addIngredient())}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={addIngredient}
+                      disabled={!newIngredient.trim()}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeIngredient(index)}
-                    className="shrink-0"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
                 </div>
-              ))}
-              <div className="flex gap-2">
-                <Input
-                  value={newIngredient}
-                  onChange={(e) => setNewIngredient(e.target.value)}
-                  placeholder="Add ingredient (e.g., 2 cups rice, 1 tbsp oil)..."
-                  className="flex-1"
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addIngredient())}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={addIngredient}
-                  disabled={!newIngredient.trim()}
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
+              </div>
+              
+              {/* Show parsed ingredients preview if meal exists */}
+              {meal?.parsed_ingredients && meal.parsed_ingredients.length > 0 && (
+                <ParsedIngredientsList parsedIngredients={meal.parsed_ingredients} />
+              )}
+            </div>
+
+            {/* Right Column - Instructions */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Cooking Instructions</Label>
+                <div className="space-y-2">
+                  {instructions.filter(instruction => instruction.trim()).map((instruction, index) => (
+                    <div key={index} className="flex items-start gap-2">
+                      <span className="text-sm text-muted-foreground min-w-[2rem] mt-2">
+                        {index + 1}.
+                      </span>
+                      <div className="flex-1 text-sm border rounded-md p-2 bg-muted/30">
+                        {instruction}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeInstruction(index)}
+                        className="shrink-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <div className="flex gap-2">
+                    <Textarea
+                      value={newInstruction}
+                      onChange={(e) => setNewInstruction(e.target.value)}
+                      placeholder="Add cooking instruction..."
+                      rows={2}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={addInstruction}
+                      disabled={!newInstruction.trim()}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
-          {/* Instructions */}
-          <div className="space-y-2">
-            <Label>Cooking Instructions</Label>
-            <div className="space-y-2">
-              {instructions.filter(instruction => instruction.trim()).map((instruction, index) => (
-                <div key={index} className="flex items-start gap-2">
-                  <span className="text-sm text-muted-foreground min-w-[2rem] mt-2">
-                    {index + 1}.
-                  </span>
-                  <div className="flex-1 text-sm border rounded-md p-2 bg-muted/30">
-                    {instruction}
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeInstruction(index)}
-                    className="shrink-0"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-              <div className="flex gap-2">
-                <Textarea
-                  value={newInstruction}
-                  onChange={(e) => setNewInstruction(e.target.value)}
-                  placeholder="Add cooking instruction..."
-                  rows={2}
-                  className="flex-1"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={addInstruction}
-                  disabled={!newInstruction.trim()}
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
 
           {/* Tags */}
           <div className="space-y-2">
