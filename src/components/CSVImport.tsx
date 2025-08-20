@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import Papa from "papaparse";
 import { useMeals, Meal } from "@/hooks/useMeals";
+import { parseIngredientsArray } from "@/utils/ingredientParser";
 
 interface CSVRow {
   "Recipe Name": string;
@@ -201,10 +202,14 @@ export const CSVImport = ({ onClose }: CSVImportProps) => {
             await Promise.all(
               batch.map(async (row, batchIndex) => {
                 try {
+                  const ingredients = row["Ingredients"]?.trim() ? parseIngredients(row["Ingredients"]) : [];
+                  const parsedIngredients = ingredients.length > 0 ? parseIngredientsArray(ingredients) : [];
+                  
                   const mealData: Partial<Meal> = {
                     name: row["Recipe Name"].trim(),
                     description: row["Description"]?.trim() || "",
-                    ingredients: row["Ingredients"]?.trim() ? parseIngredients(row["Ingredients"]) : [],
+                    ingredients: ingredients,
+                    parsed_ingredients: parsedIngredients,
                     prep_time_minutes: row["Prep Time"]?.trim() ? parseInt(row["Prep Time"]) : 0,
                     cook_time_minutes: row["Cook Time"]?.trim() ? parseInt(row["Cook Time"]) : 0,
                     cuisine_type: row["Cuisine Type"]?.trim() || "Indian",

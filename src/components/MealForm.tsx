@@ -259,12 +259,13 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
             </div>
           </div>
 
-          {/* Ingredients and Instructions Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Column - Ingredients */}
-            <div className="space-y-4">
+          {/* Ingredients Section */}
+          <div className="space-y-4">
+            <Label className="text-base font-semibold">Ingredients</Label>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column - Ingredients List */}
               <div className="space-y-2">
-                <Label>Ingredients</Label>
+                <Label className="text-sm">Ingredient List</Label>
                 <div className="space-y-2">
                   {ingredients.map((ingredient, index) => (
                     <div key={index} className="flex items-start gap-2">
@@ -304,55 +305,61 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
                   </div>
                 </div>
               </div>
-              
-              {/* Show parsed ingredients preview if meal exists */}
-              {meal?.parsed_ingredients && meal.parsed_ingredients.length > 0 && (
-                <ParsedIngredientsList parsedIngredients={meal.parsed_ingredients} />
-              )}
-            </div>
 
-            {/* Right Column - Instructions */}
-            <div className="space-y-4">
+              {/* Right Column - Parsed Ingredients Breakdown */}
               <div className="space-y-2">
-                <Label>Cooking Instructions</Label>
-                <div className="space-y-2">
-                  {instructions.filter(instruction => instruction.trim()).map((instruction, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <span className="text-sm text-muted-foreground min-w-[2rem] mt-2">
-                        {index + 1}.
-                      </span>
-                      <div className="flex-1 text-sm border rounded-md p-2 bg-muted/30">
-                        {instruction}
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeInstruction(index)}
-                        className="shrink-0"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  <div className="flex gap-2">
-                    <Textarea
-                      value={newInstruction}
-                      onChange={(e) => setNewInstruction(e.target.value)}
-                      placeholder="Add cooking instruction..."
-                      rows={2}
-                      className="flex-1"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={addInstruction}
-                      disabled={!newInstruction.trim()}
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
+                <Label className="text-sm">Ingredients Breakdown</Label>
+                {meal?.parsed_ingredients && meal.parsed_ingredients.length > 0 ? (
+                  <ParsedIngredientsList parsedIngredients={meal.parsed_ingredients} />
+                ) : (
+                  <div className="text-sm text-muted-foreground border rounded-md p-4 bg-muted/30">
+                    <p>Ingredient breakdown will appear here after saving the meal.</p>
+                    <p className="mt-1 text-xs">The system will automatically extract quantities, units, and ingredient names.</p>
                   </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Cooking Instructions Section */}
+          <div className="space-y-2">
+            <Label className="text-base font-semibold">Cooking Instructions</Label>
+            <div className="space-y-2">
+              {instructions.filter(instruction => instruction.trim()).map((instruction, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <span className="text-sm text-muted-foreground min-w-[2rem] mt-2">
+                    {index + 1}.
+                  </span>
+                  <div className="flex-1 text-sm border rounded-md p-2 bg-muted/30">
+                    {instruction}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeInstruction(index)}
+                    className="shrink-0"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
                 </div>
+              ))}
+              <div className="flex gap-2">
+                <Textarea
+                  value={newInstruction}
+                  onChange={(e) => setNewInstruction(e.target.value)}
+                  placeholder="Add cooking instruction..."
+                  rows={2}
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addInstruction}
+                  disabled={!newInstruction.trim()}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
               </div>
             </div>
           </div>
