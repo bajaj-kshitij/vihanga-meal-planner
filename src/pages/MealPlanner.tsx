@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { PageLayout } from "@/components/ui/page-layout";
+import { BackButton } from "@/components/ui/back-button";
 
 const MealPlanner = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -41,6 +42,9 @@ const MealPlanner = () => {
     <PageLayout>
       <div className="min-h-screen bg-gradient-gentle">
         <div className="container mx-auto px-4 md:px-6 py-4 md:py-8">
+        <div className="mb-6">
+          <BackButton />
+        </div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Meal Planner</h1>

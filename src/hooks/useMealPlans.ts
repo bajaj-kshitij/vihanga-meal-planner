@@ -281,6 +281,39 @@ export const useMealPlans = () => {
     }
   }, [activePlan]);
 
+  const getNext7DaysPlans = (): DayPlan[] => {
+    const today = new Date();
+    const weekPlan: DayPlan[] = [];
+    const mealOrder = { breakfast: 1, lunch: 2, dinner: 3, snack: 4 };
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+      
+      const dayMeals = planMeals
+        .filter(pm => pm.planned_date === dateStr)
+        .map(pm => ({
+          id: pm.id,
+          name: pm.meal?.name || 'Unknown Meal',
+          type: pm.meal_type,
+          prepTime: pm.meal?.prep_time_minutes || 0,
+          servings: pm.meal?.servings || 1,
+          cookMethod: pm.cook_method
+        }))
+        .sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
+
+      weekPlan.push({
+        date: date.toDateString(),
+        day: dayName,
+        meals: dayMeals
+      });
+    }
+    
+    return weekPlan;
+  };
+
   return {
     mealPlans,
     activePlan,
@@ -292,6 +325,7 @@ export const useMealPlans = () => {
     getTodaysMeals,
     getTomorrowsMeals,
     getWeekPlan,
+    getNext7DaysPlans,
     setActivePlan
   };
 };

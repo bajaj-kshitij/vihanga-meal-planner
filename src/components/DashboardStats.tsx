@@ -42,12 +42,12 @@ const StatCard = ({ icon, title, value, change, trend, onClick }: StatCardProps)
 };
 
 export const DashboardStats = () => {
-  const { getWeekPlan } = useMealPlans();
+  const { getNext7DaysPlans } = useMealPlans();
   const { getLowStockItems } = useInventory();
   const navigate = useNavigate();
   
-  const weekPlan = getWeekPlan();
-  const totalMealsPlanned = weekPlan.reduce((total, day) => total + day.meals.length, 0);
+  const next7DaysPlans = getNext7DaysPlans();
+  const totalMealsPlanned = next7DaysPlans.reduce((total, day) => total + day.meals.length, 0);
   const lowStockItems = getLowStockItems();
   
   const lowStockTrend: "up" | "down" = lowStockItems.length > 5 ? "down" : "up";

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Clock, Users, ChefHat, Plus, X } from "lucide-react";
+import { Calendar, Clock, Users, ChefHat, Plus, X, ArrowLeft } from "lucide-react";
 import { format, startOfWeek, addDays } from "date-fns";
 import { useMealPlans } from "@/hooks/useMealPlans";
 import { useMeals, type MealIngredient } from "@/hooks/useMeals";
@@ -291,9 +291,15 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
       <Dialog open={showMealSelector} onOpenChange={setShowMealSelector}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              Add {selectedMealType} for {selectedDay ? format(new Date(selectedDay), "EEEE, MMM d") : ""}
-            </DialogTitle>
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={() => setShowMealSelector(false)} className="flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </Button>
+              <DialogTitle>
+                Add {selectedMealType} for {selectedDay ? format(new Date(selectedDay), "EEEE, MMM d") : ""}
+              </DialogTitle>
+            </div>
           </DialogHeader>
           
           <div className="space-y-4">
@@ -322,7 +328,13 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
       <Dialog open={showMealDetails} onOpenChange={setShowMealDetails}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{selectedMeal?.name}</DialogTitle>
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={() => setShowMealDetails(false)} className="flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </Button>
+              <DialogTitle>{selectedMeal?.name}</DialogTitle>
+            </div>
           </DialogHeader>
           
           {selectedMeal && (
@@ -343,7 +355,13 @@ export const MealPlanCalendar = ({ selectedDate = new Date() }: MealPlanCalendar
       <Dialog open={showRecipeDetails} onOpenChange={setShowRecipeDetails}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{selectedMeal?.name} - Recipe Details</DialogTitle>
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={() => setShowRecipeDetails(false)} className="flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </Button>
+              <DialogTitle>{selectedMeal?.name} - Recipe Details</DialogTitle>
+            </div>
           </DialogHeader>
           
           {selectedMeal && (

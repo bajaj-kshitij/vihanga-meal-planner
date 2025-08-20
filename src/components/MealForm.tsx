@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus } from "lucide-react";
+import { X, Plus, ArrowLeft } from "lucide-react";
 import { Meal, useMeals } from "@/hooks/useMeals";
 import { toast } from "sonner";
 import { ParsedIngredientsList } from "@/components/ParsedIngredientsList";
@@ -104,7 +105,13 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>{meal ? "Edit Meal" : "Add New Meal"}</CardTitle>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" onClick={onCancel} className="flex items-center gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
+          <CardTitle>{meal ? "Edit Meal" : "Add New Meal"}</CardTitle>
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
@@ -272,9 +279,16 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
                       <span className="text-sm text-muted-foreground min-w-[2rem] mt-2">
                         {index + 1}.
                       </span>
-                      <div className="flex-1 text-sm border rounded-md p-2 bg-muted/30">
-                        {ingredient}
-                      </div>
+                      <Input
+                        value={ingredient}
+                        onChange={(e) => {
+                          const updatedIngredients = [...ingredients];
+                          updatedIngredients[index] = e.target.value;
+                          setIngredients(updatedIngredients);
+                        }}
+                        className="flex-1 text-sm"
+                        placeholder="Enter ingredient..."
+                      />
                       <Button
                         type="button"
                         variant="ghost"
