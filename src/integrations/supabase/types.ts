@@ -384,6 +384,7 @@ export type Database = {
           meal_type: string
           name: string
           prep_time_minutes: number | null
+          requires_overnight_soaking: string | null
           servings: number | null
           tags: string[] | null
           updated_at: string
@@ -404,6 +405,7 @@ export type Database = {
           meal_type: string
           name: string
           prep_time_minutes?: number | null
+          requires_overnight_soaking?: string | null
           servings?: number | null
           tags?: string[] | null
           updated_at?: string
@@ -424,6 +426,7 @@ export type Database = {
           meal_type?: string
           name?: string
           prep_time_minutes?: number | null
+          requires_overnight_soaking?: string | null
           servings?: number | null
           tags?: string[] | null
           updated_at?: string

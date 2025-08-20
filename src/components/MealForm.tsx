@@ -28,6 +28,7 @@ interface FormData {
   cook_time_minutes: number;
   servings: number;
   difficulty_level: "easy" | "medium" | "hard";
+  requires_overnight_soaking: "Yes" | "No";
   is_public: boolean;
 }
 
@@ -49,6 +50,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
       cook_time_minutes: meal?.cook_time_minutes || 30,
       servings: meal?.servings || 4,
       difficulty_level: meal?.difficulty_level || "medium",
+      requires_overnight_soaking: meal?.requires_overnight_soaking || "No",
       is_public: meal?.is_public || false,
     }
   });
@@ -141,7 +143,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
           </div>
 
           {/* Meal Details */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="meal_type">Meal Type</Label>
               <Select
@@ -194,6 +196,25 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="requires_overnight_soaking">Requires Overnight Soaking</Label>
+              <Select
+                value={watch("requires_overnight_soaking")}
+                onValueChange={(value) => setValue("requires_overnight_soaking", value as "Yes" | "No")}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="No">No</SelectItem>
+                  <SelectItem value="Yes">Yes</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Additional Details */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="servings">Servings</Label>
               <Input

@@ -20,6 +20,7 @@ export interface Meal {
   tags?: string[];
   is_favorite: boolean;
   is_public: boolean;
+  requires_overnight_soaking?: "Yes" | "No";
   created_at: string;
   updated_at: string;
 }

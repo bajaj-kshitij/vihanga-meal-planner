@@ -85,14 +85,10 @@ export const MealCard = ({ meal, onEdit, onView, onToggleFavorite, onDelete }: M
       </CardHeader>
 
       <CardContent className="pt-0">
-        <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <Clock className="w-4 h-4" />
             <span>{totalTime}min</span>
-          </div>
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <Users className="w-4 h-4" />
-            <span>{meal.servings} servings</span>
           </div>
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <ChefHat className="w-4 h-4" />

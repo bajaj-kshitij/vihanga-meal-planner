@@ -52,14 +52,6 @@ export const MealPlanPreview = ({ todayPlan, tomorrowPlan, onViewFullPlan }: Mea
                   <Clock className="w-3 h-3" />
                   {meal.prepTime} min
                 </div>
-                <div className="flex items-center gap-1">
-                  <Users className="w-3 h-3" />
-                  {meal.servings} servings
-                </div>
-                <div className="flex items-center gap-1">
-                  <ChefHat className="w-3 h-3" />
-                  {meal.cookMethod === "cook" ? "Cook prepares" : "Self-made"}
-                </div>
               </div>
             </div>
           </div>
