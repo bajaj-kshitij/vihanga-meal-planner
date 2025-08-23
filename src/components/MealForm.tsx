@@ -324,7 +324,14 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
               <div className="space-y-2">
                 <Label className="text-sm">Ingredients Breakdown</Label>
                 {meal?.parsed_ingredients && meal.parsed_ingredients.length > 0 ? (
-                  <ParsedIngredientsList parsedIngredients={meal.parsed_ingredients} />
+                  <ParsedIngredientsList 
+                    parsedIngredients={meal.parsed_ingredients} 
+                    editable={true}
+                    onUpdate={(updatedIngredients) => {
+                      // This will be handled by the parent component that manages meal data
+                      console.log('Updated ingredients:', updatedIngredients);
+                    }}
+                  />
                 ) : (
                   <div className="text-sm text-muted-foreground border rounded-md p-4 bg-muted/30">
                     <p>Ingredient breakdown will appear here after saving the meal.</p>

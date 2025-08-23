@@ -1,4 +1,4 @@
-import { Calendar, Clock, Users, ChefHat } from "lucide-react";
+import { Calendar, Clock, Users, ChefHat, Moon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,6 +10,7 @@ interface Meal {
   prepTime: number;
   servings: number;
   cookMethod: "cook" | "self";
+  requiresOvernightSoaking?: string;
 }
 
 interface DayPlan {
@@ -52,6 +53,12 @@ export const MealPlanPreview = ({ todayPlan, tomorrowPlan, onViewFullPlan }: Mea
                   <Clock className="w-3 h-3" />
                   {meal.prepTime} min
                 </div>
+                {meal.requiresOvernightSoaking === "Yes" && (
+                  <div className="flex items-center gap-1 text-amber-600">
+                    <Moon className="w-3 h-3" />
+                    Overnight soaking
+                  </div>
+                )}
               </div>
             </div>
           </div>

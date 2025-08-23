@@ -29,6 +29,7 @@ export interface MealPlanMeal {
     name: string;
     prep_time_minutes: number;
     servings: number;
+    requires_overnight_soaking?: string;
   };
 }
 
@@ -42,6 +43,7 @@ export interface DayPlan {
     prepTime: number;
     servings: number;
     cookMethod: 'cook' | 'self';
+    requiresOvernightSoaking?: string;
   }>;
 }
 
@@ -85,7 +87,7 @@ export const useMealPlans = () => {
         .from('meal_plan_meals')
         .select(`
           *,
-          meal:meals(id, name, prep_time_minutes, servings)
+          meal:meals(id, name, prep_time_minutes, servings, requires_overnight_soaking)
         `)
         .eq('meal_plan_id', planId)
         .order('planned_date', { ascending: true });
@@ -210,7 +212,8 @@ export const useMealPlans = () => {
         type: pm.meal_type,
         prepTime: pm.meal?.prep_time_minutes || 0,
         servings: pm.meal?.servings || 1,
-        cookMethod: pm.cook_method
+        cookMethod: pm.cook_method,
+        requiresOvernightSoaking: pm.meal?.requires_overnight_soaking
       }))
       .sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
 
@@ -254,7 +257,8 @@ export const useMealPlans = () => {
           type: pm.meal_type,
           prepTime: pm.meal?.prep_time_minutes || 0,
           servings: pm.meal?.servings || 1,
-          cookMethod: pm.cook_method
+          cookMethod: pm.cook_method,
+          requiresOvernightSoaking: pm.meal?.requires_overnight_soaking
         }))
         .sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
 
@@ -300,7 +304,8 @@ export const useMealPlans = () => {
           type: pm.meal_type,
           prepTime: pm.meal?.prep_time_minutes || 0,
           servings: pm.meal?.servings || 1,
-          cookMethod: pm.cook_method
+          cookMethod: pm.cook_method,
+          requiresOvernightSoaking: pm.meal?.requires_overnight_soaking
         }))
         .sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
 
