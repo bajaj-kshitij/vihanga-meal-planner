@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Save, X } from "lucide-react";
+import { Save, X, Edit2 } from "lucide-react";
 import { useState } from "react";
 
 interface ParsedIngredientsListProps {
@@ -14,28 +14,36 @@ interface ParsedIngredientsListProps {
 }
 
 export function ParsedIngredientsList({ parsedIngredients, className = "", editable = false, onUpdate }: ParsedIngredientsListProps) {
-  const [editingIngredients, setEditingIngredients] = useState<ParsedIngredient[]>([]);
-  const [isEditing, setIsEditing] = useState(false);
+  const [editingIndices, setEditingIndices] = useState<Set<number>>(new Set());
+  const [editingIngredients, setEditingIngredients] = useState<ParsedIngredient[]>([...parsedIngredients]);
 
   if (!parsedIngredients || parsedIngredients.length === 0) {
     return null;
   }
 
-  const startEditing = () => {
-    setEditingIngredients([...parsedIngredients]);
-    setIsEditing(true);
+  const startEditingRow = (index: number) => {
+    setEditingIndices(prev => new Set([...prev, index]));
   };
 
-  const saveChanges = () => {
+  const saveRow = (index: number) => {
+    const newEditingIndices = new Set(editingIndices);
+    newEditingIndices.delete(index);
+    setEditingIndices(newEditingIndices);
+    
     if (onUpdate) {
       onUpdate(editingIngredients);
     }
-    setIsEditing(false);
   };
 
-  const cancelEditing = () => {
-    setEditingIngredients([]);
-    setIsEditing(false);
+  const cancelEditingRow = (index: number) => {
+    const newEditingIndices = new Set(editingIndices);
+    newEditingIndices.delete(index);
+    setEditingIndices(newEditingIndices);
+    
+    // Reset to original value
+    const updated = [...editingIngredients];
+    updated[index] = parsedIngredients[index];
+    setEditingIngredients(updated);
   };
 
   const updateIngredient = (index: number, field: keyof ParsedIngredient, value: string) => {
@@ -44,41 +52,23 @@ export function ParsedIngredientsList({ parsedIngredients, className = "", edita
     setEditingIngredients(updated);
   };
 
-  const ingredientsToShow = isEditing ? editingIngredients : parsedIngredients;
-
   return (
     <Card className={className}>
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg">Ingredients Breakdown</CardTitle>
-          {editable && !isEditing && (
-            <Button variant="outline" size="sm" onClick={startEditing}>
-              Edit
-            </Button>
-          )}
-          {isEditing && (
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={saveChanges}>
-                <Save className="w-4 h-4 mr-1" />
-                Save
-              </Button>
-              <Button variant="ghost" size="sm" onClick={cancelEditing}>
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          )}
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {ingredientsToShow.map((ingredient, index) => (
+          {editingIngredients.map((ingredient, index) => (
             <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border">
               <span className="text-sm text-muted-foreground min-w-[2rem] mt-1">
                 {index + 1}.
               </span>
               
               <div className="flex-1 space-y-2">
-                {isEditing ? (
+                {editingIndices.has(index) ? (
                   <div className="space-y-2">
                     <Input
                       value={ingredient.name}
@@ -128,6 +118,25 @@ export function ParsedIngredientsList({ parsedIngredients, className = "", edita
                   </>
                 )}
               </div>
+              
+              {editable && (
+                <div className="flex gap-1">
+                  {editingIndices.has(index) ? (
+                    <>
+                      <Button variant="ghost" size="sm" onClick={() => saveRow(index)}>
+                        <Save className="w-3 h-3" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => cancelEditingRow(index)}>
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </>
+                  ) : (
+                    <Button variant="ghost" size="sm" onClick={() => startEditingRow(index)}>
+                      <Edit2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
