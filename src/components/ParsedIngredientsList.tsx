@@ -123,15 +123,15 @@ export function ParsedIngredientsList({ parsedIngredients, className = "", edita
                 <div className="flex gap-1">
                   {editingIndices.has(index) ? (
                     <>
-                      <Button variant="ghost" size="sm" onClick={() => saveRow(index)}>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => saveRow(index)}>
                         <Save className="w-3 h-3" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => cancelEditingRow(index)}>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => cancelEditingRow(index)}>
                         <X className="w-3 h-3" />
                       </Button>
                     </>
                   ) : (
-                    <Button variant="ghost" size="sm" onClick={() => startEditingRow(index)}>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => startEditingRow(index)}>
                       <Edit2 className="w-3 h-3" />
                     </Button>
                   )}

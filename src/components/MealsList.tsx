@@ -338,7 +338,7 @@ export const MealsList = () => {
             <span className="ml-1">({favoriteMeals.length})</span>
           </TabsTrigger>
           <TabsTrigger value="all" className="text-xs sm:text-sm">
-            All <span className="hidden sm:inline">Meals</span> ({filteredMeals.length})
+            All ({filteredMeals.length})
           </TabsTrigger>
         </TabsList>
 
