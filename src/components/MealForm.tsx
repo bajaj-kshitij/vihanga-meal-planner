@@ -37,6 +37,7 @@ interface FormData {
 export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) => {
   const [instructions, setInstructions] = useState<string[]>(meal?.instructions || [""]);
   const [ingredients, setIngredients] = useState<string[]>(meal?.ingredients || []);
+  const [parsedIngredients, setParsedIngredients] = useState(meal?.parsed_ingredients || []);
   const [tags, setTags] = useState<string[]>(meal?.tags || []);
   const [newTag, setNewTag] = useState("");
   const [newInstruction, setNewInstruction] = useState("");
@@ -97,6 +98,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
       ...data,
       instructions: finalInstructions.length > 0 ? finalInstructions : undefined,
       ingredients: finalIngredients.length > 0 ? finalIngredients : undefined,
+      parsed_ingredients: parsedIngredients.length > 0 ? parsedIngredients : undefined,
       tags: tags.length > 0 ? tags : undefined,
     };
     onSubmit(mealData);
@@ -323,13 +325,12 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
               {/* Right Column - Parsed Ingredients Breakdown */}
               <div className="space-y-2">
                 <Label className="text-sm">Ingredients Breakdown</Label>
-                {meal?.parsed_ingredients && meal.parsed_ingredients.length > 0 ? (
+                {parsedIngredients && parsedIngredients.length > 0 ? (
                   <ParsedIngredientsList 
-                    parsedIngredients={meal.parsed_ingredients} 
+                    parsedIngredients={parsedIngredients} 
                     editable={true}
                     onUpdate={(updatedIngredients) => {
-                      // This will be handled by the parent component that manages meal data
-                      console.log('Updated ingredients:', updatedIngredients);
+                      setParsedIngredients(updatedIngredients);
                     }}
                   />
                 ) : (
