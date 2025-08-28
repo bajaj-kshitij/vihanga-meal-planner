@@ -64,35 +64,8 @@ export const useMeals = () => {
 
       if (error) throw error;
       
-      // Process existing meals to split comma-separated ingredients and parse them only if no parsed_ingredients exist
-      const processedMeals = (data || []).map(meal => {
-        if (meal.ingredients && meal.ingredients.length > 0) {
-          const processedIngredients: string[] = [];
-          meal.ingredients.forEach((ingredient: string, index: number) => {
-            // Only split the first ingredient if it contains commas
-            if (index === 0 && ingredient.includes(',')) {
-              const splitIngredients = ingredient.split(',').map(ing => ing.trim()).filter(ing => ing);
-              processedIngredients.push(...splitIngredients);
-            } else {
-              processedIngredients.push(ingredient);
-            }
-          });
-          
-          // Only parse ingredients if no parsed_ingredients exist (first time or CSV import)
-          const parsedIngredients = (!meal.parsed_ingredients || (Array.isArray(meal.parsed_ingredients) && meal.parsed_ingredients.length === 0)) 
-            ? parseIngredientsArray(processedIngredients) 
-            : meal.parsed_ingredients;
-          
-          return { 
-            ...meal, 
-            ingredients: processedIngredients,
-            parsed_ingredients: parsedIngredients
-          };
-        }
-        return meal;
-      });
-      
-      setMeals(processedMeals as Meal[]);
+      // Set meals directly without auto-splitting to preserve user edits
+      setMeals((data || []) as Meal[]);
     } catch (error) {
       console.error("Error fetching meals:", error);
       toast.error("Failed to load meals");
@@ -126,16 +99,8 @@ export const useMeals = () => {
         return instruction;
       }).flat() || [];
 
-      // Auto-split comma-separated ingredients
-      const processedIngredients = mealData.ingredients?.map((ingredient, index) => {
-        // Only split the first ingredient if it contains commas
-        if (index === 0 && ingredient.includes(',')) {
-          return ingredient.split(',').map(ing => ing.trim()).filter(ing => ing);
-        }
-        return ingredient;
-      }).flat() || [];
-
-      const finalIngredients = processedIngredients.length > 0 ? processedIngredients : mealData.ingredients || [];
+      // Keep ingredients as entered
+      const finalIngredients = mealData.ingredients || [];
       
       const insertData = {
         name: mealData.name || "",
@@ -195,20 +160,6 @@ export const useMeals = () => {
         updates.instructions = processedInstructions;
       }
 
-      // Auto-split comma-separated ingredients
-      if (updates.ingredients) {
-        const processedIngredients: string[] = [];
-        updates.ingredients.forEach((ingredient, index) => {
-          // Only split the first ingredient if it contains commas
-          if (index === 0 && ingredient.includes(',')) {
-            const splitIngredients = ingredient.split(',').map(ing => ing.trim()).filter(ing => ing);
-            processedIngredients.push(...splitIngredients);
-          } else {
-            processedIngredients.push(ingredient);
-          }
-        });
-        updates.ingredients = processedIngredients;
-      }
 
       const { data, error } = await supabase
         .from("meals")
