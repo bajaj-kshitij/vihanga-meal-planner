@@ -383,6 +383,7 @@ export type Database = {
           is_public: boolean | null
           meal_type: string
           name: string
+          parsed_ingredients: Json | null
           prep_time_minutes: number | null
           requires_overnight_soaking: string | null
           servings: number | null
@@ -404,6 +405,7 @@ export type Database = {
           is_public?: boolean | null
           meal_type: string
           name: string
+          parsed_ingredients?: Json | null
           prep_time_minutes?: number | null
           requires_overnight_soaking?: string | null
           servings?: number | null
@@ -425,6 +427,7 @@ export type Database = {
           is_public?: boolean | null
           meal_type?: string
           name?: string
+          parsed_ingredients?: Json | null
           prep_time_minutes?: number | null
           requires_overnight_soaking?: string | null
           servings?: number | null
