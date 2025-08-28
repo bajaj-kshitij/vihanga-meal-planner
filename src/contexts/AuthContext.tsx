@@ -75,6 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Error signing out:', error.message);
       throw error;
     }
+    // Force navigation to home page after successful sign out
+    window.location.href = '/';
   };
 
   const value = {

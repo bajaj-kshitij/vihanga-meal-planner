@@ -1,4 +1,4 @@
-import { Calendar, ShoppingCart, Users, ChefHat, TrendingUp, Plus } from "lucide-react";
+import { Calendar, ShoppingCart, Users, ChefHat, TrendingUp, Plus, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -55,8 +55,8 @@ export const QuickActions = ({
       onClick: onLogMeals
     },
     {
-      icon: <Plus className="w-5 h-5" />,
-      title: "Add New Meal",
+      icon: <UtensilsCrossed className="w-5 h-5" />,
+      title: "Meals",
       description: "Expand meal library",
       variant: "family",
       onClick: onAddMeal

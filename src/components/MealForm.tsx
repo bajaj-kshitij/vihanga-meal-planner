@@ -112,7 +112,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
-          <CardTitle>{meal ? "Edit Meal" : "Add New Meal"}</CardTitle>
+          <CardTitle>{meal ? "Edit Meal" : "Create Meal"}</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
@@ -322,9 +322,8 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
                 </div>
               </div>
 
-              {/* Right Column - Parsed Ingredients Breakdown */}
+              {/* Right Column - Parsed Ingredients */}
               <div className="space-y-2">
-                <Label className="text-sm">Ingredients Breakdown</Label>
                 {parsedIngredients && parsedIngredients.length > 0 ? (
                   <ParsedIngredientsList 
                     parsedIngredients={parsedIngredients} 

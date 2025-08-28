@@ -5,6 +5,7 @@ export interface ParsedIngredient {
   quantity: string | null;
   unit: string | null;
   original: string;
+  [key: string]: string | null; // Index signature for Supabase Json compatibility
 }
 
 // Common units mapping (both singular and plural forms)
