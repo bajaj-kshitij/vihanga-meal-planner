@@ -108,13 +108,7 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={onCancel} className="flex items-center gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </Button>
-          <CardTitle>{meal ? "Edit Meal" : "Create Meal"}</CardTitle>
-        </div>
+        <CardTitle>{meal ? "Edit Meal" : "Create Meal"}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
