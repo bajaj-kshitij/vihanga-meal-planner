@@ -64,7 +64,7 @@ export const useMeals = () => {
 
       if (error) throw error;
       
-      // Process existing meals to split comma-separated ingredients and parse them
+      // Process existing meals to split comma-separated ingredients and parse them only if no parsed_ingredients exist
       const processedMeals = (data || []).map(meal => {
         if (meal.ingredients && meal.ingredients.length > 0) {
           const processedIngredients: string[] = [];
@@ -78,8 +78,10 @@ export const useMeals = () => {
             }
           });
           
-          // Parse ingredients to extract structured data
-          const parsedIngredients = parseIngredientsArray(processedIngredients);
+          // Only parse ingredients if no parsed_ingredients exist (first time or CSV import)
+          const parsedIngredients = (!meal.parsed_ingredients || (Array.isArray(meal.parsed_ingredients) && meal.parsed_ingredients.length === 0)) 
+            ? parseIngredientsArray(processedIngredients) 
+            : meal.parsed_ingredients;
           
           return { 
             ...meal, 
@@ -218,13 +220,13 @@ export const useMeals = () => {
       if (error) throw error;
 
       const updatedMeal = data ?? { id, ...updates };
-      const parsedIngredients = updatedMeal.ingredients ? parseIngredientsArray(updatedMeal.ingredients) : undefined;
       
       setMeals(prev => prev.map(meal => 
         meal.id === id ? { 
           ...meal, 
           ...(updatedMeal), 
-          parsed_ingredients: parsedIngredients || meal.parsed_ingredients 
+          // Preserve existing parsed_ingredients when updating, don't auto-parse
+          parsed_ingredients: updates.parsed_ingredients !== undefined ? updates.parsed_ingredients : meal.parsed_ingredients 
         } as Meal : meal
       ));
       toast.success("Meal updated successfully");

@@ -98,7 +98,8 @@ export const MealForm = ({ meal, onSubmit, onCancel, loading }: MealFormProps) =
       ...data,
       instructions: finalInstructions.length > 0 ? finalInstructions : undefined,
       ingredients: finalIngredients.length > 0 ? finalIngredients : undefined,
-      parsed_ingredients: parsedIngredients.length > 0 ? parsedIngredients : undefined,
+      // Only include parsed_ingredients if this is a new meal or if it was explicitly set (e.g., from CSV)
+      ...(meal ? { parsed_ingredients: parsedIngredients.length > 0 ? parsedIngredients : meal.parsed_ingredients } : {}),
       tags: tags.length > 0 ? tags : undefined,
     };
     onSubmit(mealData);
